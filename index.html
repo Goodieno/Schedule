@@ -3,95 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Teacher Dashboard</title>
+
+<title>Tapdong TV Calendar</title>
 
 <style>
 
+/* ================= BODY ================= */
+
 body{
-font-family:Arial;
-background:#0f172a;
-color:#e2e8f0;
-margin:0;
-padding:20px;
-display:flex;
-justify-content:center;
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#0f1c2e;
+    color:white;
 }
 
-.container{
-width:100%;
-max-width:420px;
+/* ================= HEADER ================= */
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 25px;
+    font-size:20px;
 }
 
-.card{
-background:#1e293b;
-border:1px solid #334155;
-border-radius:14px;
-padding:18px;
-margin-bottom:18px;
-box-shadow:0 0 10px rgba(0,0,0,0.4);
+.info{
+    display:flex;
+    gap:25px;
+    align-items:center;
 }
 
-h2{
-margin-top:0;
-font-size:20px;
+.bold{
+    font-weight:bold;
 }
 
-.clockWrap{
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
+/* ================= CLOCK ================= */
+
+#clockContainer{
+    display:flex;
+    justify-content:center;
+    margin-top:20px;
 }
 
 canvas{
-background:black;
-border-radius:50%;
+    background:#132a46;
+    border-radius:50%;
 }
 
-#timeLeft{
-font-size:32px;
-font-weight:bold;
-margin-top:10px;
+/* ================= COUNTDOWN ================= */
+
+#countdown{
+    position:absolute;
+    text-align:center;
+    font-size:28px;
+    font-weight:bold;
+    margin-top:150px;
 }
 
-#clockLabel{
-font-size:16px;
-opacity:.8;
+/* ================= SCHEDULE ================= */
+
+#schedule{
+    width:90%;
+    margin:auto;
+    margin-top:30px;
+    border-collapse:collapse;
 }
 
-.weatherRow{
-display:flex;
-justify-content:space-between;
-font-size:18px;
+#schedule td{
+    padding:10px;
+    border-bottom:1px solid rgba(255,255,255,0.2);
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-}
+/* ================= CURRENT CLASS GLOW ================= */
 
-td,th{
-padding:6px;
-text-align:center;
-}
-
-th{
-color:#94a3b8;
-}
-
-.activeClass{
-animation:pulse 2s infinite;
-border-radius:6px;
+.current{
+    animation:pulse 2s infinite;
 }
 
 @keyframes pulse{
-0%{box-shadow:0 0 5px #3b82f6;}
-50%{box-shadow:0 0 18px #3b82f6;}
-100%{box-shadow:0 0 5px #3b82f6;}
+
+0%{
+box-shadow:0 0 10px #4da6ff;
 }
 
-.weekSchedule{
-display:none;
+50%{
+box-shadow:0 0 25px #4da6ff;
+}
+
+100%{
+box-shadow:0 0 10px #4da6ff;
+}
+
 }
 
 </style>
@@ -99,79 +101,40 @@ display:none;
 
 <body>
 
-<div class="container">
+<header>
 
-<div class="card clockWrap">
+<div id="date"></div>
 
-<canvas id="clock" width="260" height="260"></canvas>
+<div class="info">
 
-<div id="timeLeft">--:--</div>
-
-<div id="clockLabel">Loading...</div>
-
+<div>
+🌤 <span class="bold">Weather:</span>
+<span id="weather">Loading...</span>
 </div>
 
-
-<div class="card">
-
-<h2>Weather</h2>
-
-<div id="weather">Loading...</div>
-
-<div style="margin-top:10px">
-Air Quality: <span id="air">Loading...</span>
+<div>
+😷 <span class="bold">Air Quality:</span>
+<span id="air">Loading...</span>
 </div>
 
 </div>
 
+</header>
 
-<div class="card" onclick="toggleWeek()">
-
-<h2 id="todayTitle">Today's Classes</h2>
-
-<table id="todaySchedule"></table>
-
-<div id="noClasses" style="display:none;text-align:center;padding:10px">
-No Classes Today
+<div id="clockContainer">
+<canvas id="clock" width="320" height="320"></canvas>
+<div id="countdown"></div>
 </div>
 
-</div>
-
-
-<div class="card weekSchedule" id="weekCard">
-
-<h2>Weekly Schedule</h2>
-
-<table>
-
-<tr>
-<th>교시</th>
-<th>월</th>
-<th>화</th>
-<th>수</th>
-<th>목</th>
-<th>금</th>
-</tr>
-
-<tr><td>1</td><td>-</td><td>-</td><td>-</td><td>5-6</td><td>5-3</td></tr>
-<tr><td>2</td><td>6-4</td><td>-</td><td>6-5</td><td>5-5</td><td>5-7</td></tr>
-<tr><td>3</td><td>6-3</td><td>-</td><td>6-6</td><td>5-4</td><td>5-8</td></tr>
-<tr><td>4</td><td>6-1</td><td>-</td><td>6-7</td><td>5-1</td><td>5-9</td></tr>
-<tr><td>5</td><td>6-2</td><td>-</td><td>6-8</td><td>5-2</td><td>-</td></tr>
-
-</table>
-
-</div>
-
-</div>
-
+<table id="schedule"></table>
 
 <script>
 
-const API_KEY="fa9fe37b9be14839fe6774643939e974"
+/* ================= API KEY ================= */
 
+const API_KEY = "fa9fe37b9be14839fe6774643939e974";
 
-/* ================= WEATHER (YOUR CODE) ================= */
+/* ================= WEATHER (FIXED) ================= */
 
 async function loadWeather() {
 
@@ -201,7 +164,6 @@ async function loadWeather() {
             "Unavailable";
     }
 }
-
 
 /* ================= AIR ================= */
 
@@ -244,123 +206,77 @@ async function loadAir() {
     }
 }
 
-
-/* ================= SCHEDULE ================= */
-
-const schedule={
-Monday:[null,"6-4 English","6-3 English","6-1 English","6-2 English",null],
-Tuesday:null,
-Wednesday:[null,"6-5 English","6-6 English","6-7 English","6-8 English",null],
-Thursday:["5-6 English","5-5 English","5-4 English","5-1 English","5-2 English",null],
-Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
-}
-
-
-const blocks=[
-
-{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
-{type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
-{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
-{type:"break",start:"13:00",end:"13:10"},
-{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
-
-]
-
-
-function toMin(t){
-let [h,m]=t.split(":")
-return parseInt(h)*60+parseInt(m)
-}
-
-
 /* ================= CLOCK ================= */
 
-const canvas=document.getElementById("clock")
-const ctx=canvas.getContext("2d")
+const canvas = document.getElementById("clock");
+const ctx = canvas.getContext("2d");
 
 function drawClock(){
 
-let now=new Date()
+const radius = canvas.width/2;
+ctx.clearRect(0,0,canvas.width,canvas.height);
 
-let h=now.getHours()
-let m=now.getMinutes()
-let s=now.getSeconds()
+ctx.translate(radius,radius);
 
-let nowMin=h*60+m+s/60
+/* outer ring */
 
-ctx.clearRect(0,0,260,260)
+ctx.beginPath();
+ctx.arc(0,0,radius-5,0,2*Math.PI);
+ctx.strokeStyle="white";
+ctx.lineWidth=4;
+ctx.stroke();
 
-ctx.beginPath()
-ctx.arc(130,130,120,0,Math.PI*2)
-ctx.fillStyle="black"
-ctx.fill()
+/* ticks */
 
-let active=null
+for(let i=0;i<60;i++){
 
-for(let b of blocks){
+ctx.rotate(Math.PI/30);
 
-if(nowMin>=toMin(b.start)&&nowMin<=toMin(b.end)){
-active=b
-break
-}
+ctx.beginPath();
 
-}
+ctx.moveTo(0,-radius+10);
 
-if(active){
+if(i%5==0){
 
-let total=toMin(active.end)-toMin(active.start)
+ctx.lineWidth=3;
+ctx.lineTo(0,-radius+25);
 
-let remain=toMin(active.end)-nowMin
+}else{
 
-let percent=remain/total
-
-let angle=-Math.PI/2+(percent*Math.PI*2)
-
-let color="red"
-
-if(active.type==="break")color="blue"
-if(active.type==="lunch")color="yellow"
-
-ctx.beginPath()
-ctx.arc(130,130,100,-Math.PI/2,angle)
-ctx.lineWidth=14
-ctx.strokeStyle=color
-ctx.stroke()
-
-let min=Math.floor(remain)
-let sec=Math.floor((remain-min)*60)
-
-document.getElementById("timeLeft").innerText=
-min+":"+String(sec).padStart(2,"0")
-
-document.getElementById("clockLabel").innerText=active.label
+ctx.lineWidth=1;
+ctx.lineTo(0,-radius+18);
 
 }
 
-}
-
-
-function toggleWeek(){
-
-let w=document.getElementById("weekCard")
-
-w.style.display=(w.style.display=="block")?"none":"block"
+ctx.strokeStyle="white";
+ctx.stroke();
 
 }
 
+ctx.setTransform(1,0,0,1,0,0);
 
-setInterval(drawClock,1000)
+}
 
-drawClock()
+setInterval(drawClock,1000);
 
-loadWeather()
-loadAir()
+/* ================= DATE ================= */
+
+function updateDate(){
+
+const now=new Date();
+
+document.getElementById("date").textContent=
+now.toDateString();
+
+}
+
+setInterval(updateDate,1000);
+
+/* ================= INIT ================= */
+
+loadWeather();
+loadAir();
+updateDate();
 
 </script>
 
