@@ -81,8 +81,17 @@ th{
 color:#9cc9ff;
 }
 
-.activeRow{
+.activeRowClass{
 background:rgba(255,0,0,.25);
+}
+
+.activeRowLunch{
+background:rgba(255,255,0,.35);
+}
+
+.lunchText{
+color:red;
+font-weight:bold;
 }
 
 /* ================= WEEK POPUP ================= */
@@ -118,20 +127,6 @@ text-align:left;
 width:100%;
 border-collapse:collapse;
 text-align:center;
-table-layout:fixed;
-}
-
-#weekTable th,
-#weekTable td{
-word-wrap:break-word;
-}
-
-#weekTable th{
-width:20%;
-}
-
-#weekTable th:first-child{
-width:12%;
 }
 
 #weekTable th{
@@ -176,12 +171,12 @@ font-weight:bold;
 
 <table id="scheduleTable">
 <tr>
-<th>Time</th>
-<th>Activity</th>
+<th>Period</th>
+<th>Class</th>
 </tr>
 </table>
 
-<!-- WEEK POPUP (unchanged) -->
+<!-- WEEK POPUP -->
 
 <div id="weekPopup">
 <div id="weekBox">
@@ -283,51 +278,51 @@ Thursday:["5-6 English","5-5 English","5-4 English","5-1 English","5-2 English",
 Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
 };
 
-/* ================= BLOCK SYSTEM ================= */
-
-const blocks=[
-{type:"class",label:"1교시",start:"09:00",end:"09:40",period:0},
-{type:"break",label:"Break",start:"09:40",end:"09:50"},
-{type:"class",label:"2교시",start:"09:50",end:"10:30",period:1},
-{type:"break",label:"Break",start:"10:30",end:"10:40"},
-{type:"class",label:"3교시",start:"10:40",end:"11:20",period:2},
-{type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
-{type:"class",label:"4교시",start:"12:20",end:"13:00",period:3},
-{type:"break",label:"Break",start:"13:00",end:"13:10"},
-{type:"class",label:"5교시",start:"13:10",end:"13:50",period:4},
-{type:"break",label:"Break",start:"13:50",end:"14:00"},
-{type:"class",label:"6교시",start:"14:00",end:"14:40",period:5}
-];
-
 /* ================= DATE ================= */
 
 const now=new Date();
 const today=now.toLocaleDateString("en-US",{weekday:"long"});
 document.getElementById("today").textContent=today;
 
-/* ================= BUILD DAILY TABLE ================= */
+/* ================= BUILD TABLE ================= */
 
 const table=document.getElementById("scheduleTable");
 
+const blocks=[
+{type:"class",label:"1교시",start:"09:00",end:"09:40"},
+{type:"break",label:"쉬는시간",start:"09:40",end:"09:50"},
+{type:"class",label:"2교시",start:"09:50",end:"10:30"},
+{type:"break",label:"쉬는시간",start:"10:30",end:"10:40"},
+{type:"class",label:"3교시",start:"10:40",end:"11:20"},
+{type:"lunch",label:"점심시간",start:"11:20",end:"12:20"},
+{type:"class",label:"4교시",start:"12:20",end:"13:00"},
+{type:"break",label:"쉬는시간",start:"13:00",end:"13:10"},
+{type:"class",label:"5교시",start:"13:10",end:"13:50"},
+{type:"break",label:"쉬는시간",start:"13:50",end:"14:00"},
+{type:"class",label:"6교시",start:"14:00",end:"14:40"}
+];
+
 blocks.forEach((b,i)=>{
 
+if(b.type==="break") return;
+
 let row=document.createElement("tr");
-row.dataset.index=i;
 
-let time=document.createElement("td");
-time.textContent=`${b.start} - ${b.end}`;
+let p=document.createElement("td");
+p.textContent=b.label;
 
-let activity=document.createElement("td");
+let c=document.createElement("td");
 
 if(b.type==="class"){
-activity.textContent=schedule[today]?.[b.period] || "-";
-}
-else{
-activity.textContent=b.label;
+c.textContent=(schedule[today]||[])[i]||"-";
 }
 
-row.appendChild(time);
-row.appendChild(activity);
+if(b.type==="lunch"){
+c.innerHTML='<span class="lunchText">LUNCH</span>';
+}
+
+row.appendChild(p);
+row.appendChild(c);
 table.appendChild(row);
 
 });
@@ -342,6 +337,27 @@ let[h,m]=t.split(":");
 return h*60+ +m;
 }
 
+function highlightSchedule(label,type){
+
+document.querySelectorAll("#scheduleTable tr").forEach(r=>{
+r.classList.remove("activeRowClass","activeRowLunch");
+});
+
+document.querySelectorAll("#scheduleTable tr").forEach(r=>{
+
+let td=r.querySelector("td");
+
+if(td && td.textContent===label){
+
+if(type==="class") r.classList.add("activeRowClass");
+if(type==="lunch") r.classList.add("activeRowLunch");
+
+}
+
+});
+
+}
+
 function drawClock(){
 
 let now=new Date();
@@ -349,31 +365,49 @@ let mins=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
 
 ctx.clearRect(0,0,300,300);
 
+/* clock face */
+
 ctx.beginPath();
 ctx.arc(150,150,140,0,Math.PI*2);
 ctx.fillStyle="#1f3a5f";
 ctx.fill();
 
+/* ticks */
+
+for(let i=0;i<60;i++){
+
+let angle=i*Math.PI/30;
+let len=i%5==0?15:7;
+
+let x1=150+Math.cos(angle)*(120-len);
+let y1=150+Math.sin(angle)*(120-len);
+
+let x2=150+Math.cos(angle)*120;
+let y2=150+Math.sin(angle)*120;
+
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.strokeStyle="white";
+ctx.lineWidth=i%5==0?3:1;
+ctx.stroke();
+
+}
+
+/* active block */
+
 let active=null;
 
-blocks.forEach((b,i)=>{
+for(let b of blocks){
+
 let s=toMin(b.start);
 let e=toMin(b.end);
 
-if(mins>=s&&mins<=e){
-active={block:b,index:i};
+if(mins>=s && mins<=e){
+active=b;
+break;
 }
-});
 
-/* highlight table */
-
-document.querySelectorAll("#scheduleTable tr").forEach(r=>{
-r.classList.remove("activeRow");
-});
-
-if(active){
-let row=document.querySelector(`#scheduleTable tr[data-index='${active.index}']`);
-if(row)row.classList.add("activeRow");
 }
 
 let label="Free Time";
@@ -381,34 +415,35 @@ let color="grey";
 
 if(active){
 
-let b=active.block;
+label=active.label;
 
-label=b.label;
+if(active.type==="class") color="red";
+if(active.type==="break") color="blue";
+if(active.type==="lunch") color="yellow";
 
-if(b.type=="class")color="red";
-if(b.type=="break")color="blue";
-if(b.type=="lunch")color="yellow";
+highlightSchedule(active.label,active.type);
 
-let total=toMin(b.end)-toMin(b.start);
-let remain=toMin(b.end)-mins;
+}
+
+/* countdown arc */
+
+if(active){
+
+let total=toMin(active.end)-toMin(active.start);
+let remain=toMin(active.end)-mins;
 
 let percent=remain/total;
-let end=-Math.PI/2+percent*2*Math.PI;
 
-let pulse=(Math.sin(Date.now()/400)+1)/2;
-let glow=5+pulse*35;
+let end=-Math.PI/2+percent*2*Math.PI;
 
 ctx.beginPath();
 ctx.arc(150,150,105,-Math.PI/2,end);
 
-ctx.shadowColor=color;
-ctx.shadowBlur=glow;
+let pulse=6+Math.sin(Date.now()/200)*2;
 
-ctx.lineWidth=8;
+ctx.lineWidth=pulse;
 ctx.strokeStyle=color;
 ctx.stroke();
-
-ctx.shadowBlur=0;
 
 }
 
@@ -434,14 +469,7 @@ document.getElementById("periodLabel").style.color=color;
 
 }
 
-/* smooth animation */
-
-function animate(){
-drawClock();
-requestAnimationFrame(animate);
-}
-
-animate();
+setInterval(drawClock,1000);
 
 /* ================= WEATHER ================= */
 
