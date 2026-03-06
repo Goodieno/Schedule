@@ -425,7 +425,7 @@ highlightSchedule(active.label,active.type);
 
 }
 
-/* countdown arc */
+/* countdown arc with pulse */
 
 if(active){
 
@@ -439,11 +439,21 @@ let end=-Math.PI/2+percent*2*Math.PI;
 ctx.beginPath();
 ctx.arc(150,150,105,-Math.PI/2,end);
 
-let pulse=6+Math.sin(Date.now()/200)*2;
+/* pulse glow */
 
-ctx.lineWidth=pulse;
-ctx.strokeStyle=color;
+let glow = 10 + Math.sin(Date.now()/150) * 15;
+
+ctx.lineWidth = 8;
+ctx.strokeStyle = color;
+
+ctx.shadowBlur = glow;
+ctx.shadowColor = color;
+
 ctx.stroke();
+
+/* reset shadow so other drawing isn't affected */
+
+ctx.shadowBlur = 0;
 
 }
 
