@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Teaching Schedule</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+text-align:center;
+padding:20px;
+}
+
+h1{
+margin-bottom:5px;
+}
+
+#today{
+font-size:22px;
+margin-bottom:20px;
+}
+
+table{
+margin:auto;
+border-collapse:collapse;
+background:white;
+}
+
+td,th{
+border:1px solid #ccc;
+padding:10px 18px;
+font-size:18px;
+}
+
+th{
+background:#eee;
+}
+
+.current{
+background:#d4f6d4;
+}
+
+.next{
+background:#ffe0e0;
+}
+
+#nextClass{
+margin-top:20px;
+font-size:22px;
+font-weight:bold;
+}
+
+canvas{
+margin-top:30px;
+background:white;
+border-radius:50%;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Today's Classes</h1>
+<div id="today"></div>
+
+<table id="scheduleTable">
+<tr>
+<th>Period</th>
+<th>Class</th>
+</tr>
+</table>
+
+<div id="nextClass"></div>
+
+<canvas id="clock" width="260" height="260"></canvas>
+
+<script>
+
+// CLASS SCHEDULE
+const schedule = {
+
+Monday:[
+null,
+"6-4 English",
+"6-3 English",
+"6-1 English",
+"6-2 English",
+null
+],
+
+Tuesday:[
+"Unavailable",
+"Unavailable",
+"Unavailable",
+"Unavailable",
+"Unavailable",
+"Unavailable"
+],
+
+Wednesday:[
+null,
+"6-5 English",
+"6-6 English",
+"6-7 English",
+"6-8 English",
+null
+],
+
+Thursday:[
+"5-6 English",
+"5-5 English",
+"5-4 English",
+"5-1 English",
+"5-2 English",
+null
+],
+
+Friday:[
+"5-3 English",
+"5-7 English",
+"5-8 English",
+"5-9 English",
+null,
+null
+]
+
+};
+
+
+// PERIOD TIMES
+const periods=[
+{start:"09:00",end:"09:40"},
+{start:"09:50",end:"10:30"},
+{start:"10:40",end:"11:20"},
+{start:"12:20",end:"13:00"},
+{start:"13:10",end:"13:50"},
+{start:"14:00",end:"14:40"}
+];
+
+
+// KOREAN HOLIDAYS (EDIT WHEN NEEDED)
+const holidays=[
+"2026-03-01",
+"2026-05-05",
+"2026-06-06"
+];
+
+
+// DATE
+const now=new Date();
+const day=now.toLocaleDateString("en-US",{weekday:"long"});
+const todayISO=now.toISOString().split("T")[0];
+
+const todayText=document.getElementById("today");
+const table=document.getElementById("scheduleTable");
+const nextDiv=document.getElementById("nextClass");
+
+
+// HOLIDAY CHECK
+if(holidays.includes(todayISO)){
+todayText.innerHTML="Holiday 🇰🇷";
+}else{
+
+todayText.innerHTML=day;
+
+const todaySchedule=schedule[day];
+
+if(todaySchedule){
+
+todaySchedule.forEach((cls,i)=>{
+
+let row=document.createElement("tr");
+
+let p=document.createElement("td");
+p.innerText=(i+1)+"교시";
+
+let c=document.createElement("td");
+c.innerText=cls || "-";
+
+row.appendChild(p);
+row.appendChild(c);
+table.appendChild(row);
+
+});
+
+}
+
+}
+
+
+// TIME HELPERS
+function toMinutes(t){
+let [h,m]=t.split(":");
+return parseInt(h)*60+parseInt(m);
+}
+
+
+// FIND CURRENT / NEXT CLASS
+let current=null;
+let next=null;
+
+let nowMinutes=now.getHours()*60+now.getMinutes();
+
+periods.forEach((p,i)=>{
+
+let start=toMinutes(p.start);
+let end=toMinutes(p.end);
+
+if(nowMinutes>=start && nowMinutes<=end){
+current=i;
+}
+
+if(nowMinutes<start && next===null){
+next=i;
+}
+
+});
+
+
+// DISPLAY NEXT CLASS
+if(current!==null){
+nextDiv.innerHTML="Current: Period "+(current+1);
+}else if(next!==null){
+nextDiv.innerHTML="Next: Period "+(next+1)+" at "+periods[next].start;
+}else{
+nextDiv.innerHTML="School Day Finished";
+}
+
+
+// CLOCK
+const canvas=document.getElementById("clock");
+const ctx=canvas.getContext("2d");
+
+function drawClock(){
+
+let now=new Date();
+
+let radius=120;
+
+ctx.clearRect(0,0,260,260);
+
+ctx.save();
+ctx.translate(130,130);
+
+// clock circle
+ctx.beginPath();
+ctx.arc(0,0,radius,0,Math.PI*2);
+ctx.stroke();
+
+// hour marks
+for(let i=0;i<12;i++){
+ctx.rotate(Math.PI/6);
+ctx.beginPath();
+ctx.moveTo(0,-radius);
+ctx.lineTo(0,-radius+10);
+ctx.stroke();
+}
+
+ctx.restore();
+
+ctx.save();
+ctx.translate(130,130);
+
+// hands
+let hour=now.getHours()%12;
+let minute=now.getMinutes();
+let second=now.getSeconds();
+
+let hourAngle=(hour*Math.PI/6)+(minute*Math.PI/360);
+let minuteAngle=minute*Math.PI/30;
+
+ctx.rotate(hourAngle);
+ctx.beginPath();
+ctx.moveTo(0,10);
+ctx.lineTo(0,-60);
+ctx.stroke();
+
+ctx.rotate(-hourAngle);
+ctx.rotate(minuteAngle);
+ctx.beginPath();
+ctx.moveTo(0,20);
+ctx.lineTo(0,-90);
+ctx.stroke();
+
+ctx.restore();
+
+
+// NEXT CLASS ARC
+if(next!==null){
+
+let startMin=toMinutes(periods[next].start);
+
+let minutesUntil=startMin-(now.getHours()*60+now.getMinutes());
+
+let angle=(minutesUntil/60)*Math.PI*2;
+
+ctx.beginPath();
+ctx.arc(130,130,110,-Math.PI/2,-Math.PI/2+angle);
+ctx.strokeStyle="red";
+ctx.lineWidth=5;
+ctx.stroke();
+
+}
+
+}
+
+setInterval(drawClock,1000);
+
+</script>
+
+</body>
+</html>
