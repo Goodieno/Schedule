@@ -56,15 +56,15 @@ th{color:#9cc9ff;}
 .activeRowClass{background:rgba(255,0,0,.25);}
 .activeRowLunch{background:rgba(255,255,0,.35);}
 .lunchText{color:red;font-weight:bold;}
-/* DARKER WEEKLY POPUP THEME */
 
+/* DARKER WEEKLY POPUP THEME */
 #weekPopup {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.85); /* slightly darker overlay */
+  background: rgba(0, 0, 0, 0.85);
   display: none;
   align-items: center;
   justify-content: center;
@@ -72,18 +72,18 @@ th{color:#9cc9ff;}
 }
 
 #weekBox {
-  background: #3a3f45; /* dark grayish background instead of beige */
+  background: #3a3f45;
   padding: 20px;
   border-radius: 12px;
   width: 95%;
   max-width: 600px;
-  color: #e0e0e0; /* light text for contrast */
+  color: #e0e0e0;
 }
 
 #weekBox h3 {
   margin-top: 0;
   text-align: left;
-  color: #ffffff; /* white header */
+  color: #ffffff;
 }
 
 #weekTable {
@@ -93,27 +93,35 @@ th{color:#9cc9ff;}
 }
 
 #weekTable th {
-  background: #50555c; /* darker gray header */
-  color: #ffffff; /* white text */
+  background: #50555c;
+  color: #ffffff;
   padding: 8px;
 }
 
 #weekTable td {
   padding: 10px;
-  border-top: 1px solid #666; /* darker border */
-  color: #e0e0e0; /* light text */
+  border-top: 1px solid #666;
+  color: #e0e0e0;
 }
 
 .lunchRed {
-  color: #ff6b6b; /* slightly muted red for dark background */
+  color: #ff6b6b;
   font-size: 12px;
   font-weight: bold;
 }
 
 .lunchPurple {
-  color: #b085ff; /* lighter purple that pops on dark background */
+  color: #b085ff;
   font-size: 12px;
   font-weight: bold;
+}
+
+/* ================= PERIOD TIME TOOLTIP ================= */
+.periodTime {
+  display: inline-block;
+  font-size: 12px;
+  color: #ccc;
+  margin-right: 5px;
 }
 </style>
 </head>
@@ -223,12 +231,10 @@ Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
 
 /* ================= DATE ================= */
 const now=new Date();
-
-/* ===== DEBUG DAY ===== */
-let today="Monday"; // change to test other days
+let today="Monday"; 
 document.getElementById("today").textContent=today;
 
-/* ================= BUILD TABLE ================= */
+/* ================= BUILD TABLE WITH PERIOD TIME ================= */
 const table=document.getElementById("scheduleTable");
 const dailyBlocks={
 Monday:[
@@ -282,19 +288,27 @@ Friday:[
 {type:"class",label:"6교시",start:"14:00",end:"14:40"}
 ]
 };
+
 const activeDay=dailyBlocks[today]?today:"Monday";
 const blocks=dailyBlocks[activeDay];
 let classIndex=0;
+
 blocks.forEach((b)=>{
 if(b.type==="break") return;
 let row=document.createElement("tr");
 row.dataset.start=b.start;
 row.dataset.end=b.end;
-let p=document.createElement("td"); p.textContent=b.label;
+
+let p=document.createElement("td");
+p.innerHTML=`<span class="periodTime">${b.start}-${b.end}</span>${b.label}`;
+
 let c=document.createElement("td");
 if(b.type==="class"){ c.textContent=(schedule[activeDay]||[])[classIndex]||"-"; classIndex++; }
 if(b.type==="lunch"){ c.innerHTML='<span class="lunchText">LUNCH</span>'; }
-row.appendChild(p); row.appendChild(c); table.appendChild(row);
+
+row.appendChild(p); 
+row.appendChild(c); 
+table.appendChild(row);
 });
 
 /* ================= CURRENT CLASS DETECTOR ================= */
@@ -377,30 +391,36 @@ const geoRes=await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=Dangji
 const geoData=await geoRes.json(); const lat=geoData[0].lat; const lon=geoData[0].lon;
 const res=await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
 const data=await res.json();
-document.getElementById("weather").textContent=`🌤 Weather: ${data.weather[0].main} / ${data.main.temp.toFixed(1)}°C`;
-}catch{ document.getElementById("weather").textContent="Weather Unavailable"; }
-}
-loadWeather();
+document.getElementById("weather").text
 
-/* ================= AIR ================= */
+  /* ================= AIR ================= */
 async function loadAir(){
-try{
-const geoRes=await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`);
-const geoData=await geoRes.json(); const lat=geoData[0].lat; const lon=geoData[0].lon;
-const res=await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
-const data=await res.json(); const aqi=data.list[0].main.aqi;
-const levels=["Good 😊","Fair 🙂","Moderate 😐","Poor 😷","Very Poor ☠️"];
-document.getElementById("air").textContent=`😷 Air Quality: ${levels[aqi-1]}`;
-}catch{ document.getElementById("air").textContent="Air Quality Unavailable"; }
+    try{
+        const geoRes = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`);
+        const geoData = await geoRes.json();
+        const lat = geoData[0].lat;
+        const lon = geoData[0].lon;
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
+        const data = await res.json();
+        const aqi = data.list[0].main.aqi;
+        const levels = ["Good 😊","Fair 🙂","Moderate 😐","Poor 😷","Very Poor ☠️"];
+        document.getElementById("air").textContent = `😷 Air Quality: ${levels[aqi-1]}`;
+    } catch {
+        document.getElementById("air").textContent = "Air Quality Unavailable";
+    }
 }
 loadAir();
 
 /* ================= POPUP ================= */
-const weekPopup=document.getElementById("weekPopup");
-document.getElementById("today").onclick=()=>{ weekPopup.style.display="flex"; }
-weekPopup.onclick=()=>{ weekPopup.style.display="none"; }
+const weekPopup = document.getElementById("weekPopup");
+document.getElementById("today").onclick = () => { weekPopup.style.display = "flex"; }
+weekPopup.onclick = () => { weekPopup.style.display = "none"; }
 
-</script>
-
-</body>
-</html>
+/* ================= PERIOD TIME HOVER ================= */
+const periodCells = document.querySelectorAll("#scheduleTable td:first-child");
+periodCells.forEach(cell => {
+    const span = cell.querySelector(".periodTime");
+    if(!span) return;
+    cell.addEventListener("mouseenter", () => { span.style.display = "inline"; });
+    cell.addEventListener("mouseleave", () => { span.style.display = "inline"; }); // always visible, optional: you can hide/show on hover if you want
+});
