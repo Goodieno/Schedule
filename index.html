@@ -6,9 +6,28 @@
 <title>Teacher Timer</title>
 
 <style>
-  
-/* ================= CURRENT CLASS HIGHLIGHT ================= */
+/* ================= COUNTDOWN RING PULSE ================= */
+@keyframes ringPulseRed{
+0%{filter:drop-shadow(0 0 3px rgba(255,60,60,.6));}
+50%{filter:drop-shadow(0 0 18px rgba(255,60,60,1));}
+100%{filter:drop-shadow(0 0 3px rgba(255,60,60,.6));}
+}
+@keyframes ringPulseBlue{
+0%{filter:drop-shadow(0 0 3px rgba(70,150,255,.6));}
+50%{filter:drop-shadow(0 0 18px rgba(70,150,255,1));}
+100%{filter:drop-shadow(0 0 3px rgba(70,150,255,.6));}
+}
+@keyframes ringPulseGray{
+0%{filter:drop-shadow(0 0 3px rgba(180,180,180,.5));}
+50%{filter:drop-shadow(0 0 12px rgba(220,220,220,.9));}
+100%{filter:drop-shadow(0 0 3px rgba(180,180,180,.5));}
+}
+.pulseClass{animation:ringPulseRed 2s infinite ease-in-out;}
+.pulseBreak{animation:ringPulseBlue 2s infinite ease-in-out;}
+.pulseLunch{animation:ringPulseRed 2s infinite ease-in-out;}
+.pulseFree{animation:ringPulseGray 2s infinite ease-in-out;}
 
+/* ================= CURRENT CLASS HIGHLIGHT ================= */
 .currentClass{
 background:#1f3a5f;
 box-shadow:0 0 15px rgba(0,150,255,0.6);
@@ -17,7 +36,6 @@ transition:all .3s ease;
 }
 
 /* ================= THEME ================= */
-
 body{
 background:#0b1626;
 font-family:Arial;
@@ -26,139 +44,26 @@ text-align:center;
 margin:0;
 padding:20px;
 }
-
-h2{
-margin:10px 0;
-cursor:pointer;
-}
-
-/* ================= CLOCK ================= */
-
-#clockBox{
-margin:auto;
-width:320px;
-}
-
-canvas{
-background:#1f3a5f;
-border-radius:50%;
-box-shadow:0 0 20px rgba(0,140,255,.4);
-}
-
-/* ================= PERIOD LABEL ================= */
-
-#periodLabel{
-font-size:22px;
-font-weight:bold;
-margin-top:10px;
-}
-
-/* ================= INFO ================= */
-
-#info{
-margin-top:20px;
-font-size:18px;
-}
-
-#weather{
-font-weight:bold;
-margin-top:5px;
-}
-
-#air{
-font-weight:bold;
-margin-top:5px;
-}
-
-/* ================= SCHEDULE ================= */
-
-table{
-margin:auto;
-margin-top:20px;
-border-collapse:collapse;
-width:95%;
-max-width:400px;
-}
-
-th,td{
-padding:10px;
-border-bottom:1px solid #333;
-}
-
-th{
-color:#9cc9ff;
-}
-
-.activeRowClass{
-background:rgba(255,0,0,.25);
-}
-
-.activeRowLunch{
-background:rgba(255,255,0,.35);
-}
-
-.lunchText{
-color:red;
-font-weight:bold;
-}
-
-/* ================= WEEK POPUP ================= */
-
-#weekPopup{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.7);
-display:none;
-align-items:center;
-justify-content:center;
-z-index:1000;
-}
-
-#weekBox{
-background:#efe6dc;
-padding:20px;
-border-radius:12px;
-width:95%;
-max-width:600px;
-color:black;
-}
-
-#weekBox h3{
-margin-top:0;
-text-align:left;
-}
-
-#weekTable{
-width:100%;
-border-collapse:collapse;
-text-align:center;
-}
-
-#weekTable th{
-background:#e0cfc0;
-padding:8px;
-}
-
-#weekTable td{
-padding:10px;
-border-top:1px solid #d0c2b5;
-}
-
-.lunchRed{
-color:red;
-font-size:12px;
-font-weight:bold;
-}
-
-.lunchPurple{
-color:purple;
-font-size:12px;
-font-weight:bold;
-}
-
+h2{margin:10px 0;cursor:pointer;}
+#clockBox{margin:auto;width:320px;}
+canvas{background:#1f3a5f;border-radius:50%;box-shadow:0 0 20px rgba(0,140,255,.4);}
+#periodLabel{font-size:22px;font-weight:bold;margin-top:10px;}
+#info{margin-top:20px;font-size:18px;}
+#weather,#air{font-weight:bold;margin-top:5px;}
+table{margin:auto;margin-top:20px;border-collapse:collapse;width:95%;max-width:400px;}
+th,td{padding:10px;border-bottom:1px solid #333;}
+th{color:#9cc9ff;}
+.activeRowClass{background:rgba(255,0,0,.25);}
+.activeRowLunch{background:rgba(255,255,0,.35);}
+.lunchText{color:red;font-weight:bold;}
+#weekPopup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:1000;}
+#weekBox{background:#efe6dc;padding:20px;border-radius:12px;width:95%;max-width:600px;color:black;}
+#weekBox h3{margin-top:0;text-align:left;}
+#weekTable{width:100%;border-collapse:collapse;text-align:center;}
+#weekTable th{background:#e0cfc0;padding:8px;}
+#weekTable td{padding:10px;border-top:1px solid #d0c2b5;}
+.lunchRed{color:red;font-size:12px;font-weight:bold;}
+.lunchPurple{color:purple;font-size:12px;font-weight:bold;}
 </style>
 </head>
 
@@ -178,111 +83,32 @@ font-weight:bold;
 </div>
 
 <table id="scheduleTable">
-<tr>
-<th>Period</th>
-<th>Class</th>
-</tr>
+<tr><th>Period</th><th>Class</th></tr>
 </table>
 
 <!-- WEEK POPUP -->
-
 <div id="weekPopup">
 <div id="weekBox">
-
 <h3>벤자민 (영어)</h3>
-
 <table id="weekTable">
-
 <tr>
-<th>교시</th>
-<th>월요일</th>
-<th>화요일</th>
-<th>수요일</th>
-<th>목요일</th>
-<th>금요일</th>
+<th>교시</th><th>월요일</th><th>화요일</th><th>수요일</th><th>목요일</th><th>금요일</th>
 </tr>
-
-<tr>
-<td>1교시</td>
-<td></td>
-<td></td>
-<td></td>
-<td>5-6 영어</td>
-<td>5-3 영어</td>
-</tr>
-
-<tr>
-<td>2교시</td>
-<td>6-4 영어</td>
-<td></td>
-<td>6-5 영어</td>
-<td>5-5 영어</td>
-<td>5-7 영어</td>
-</tr>
-
-<tr>
-<td>3교시</td>
-<td>6-3 영어</td>
-<td></td>
-<td>6-6 영어</td>
-<td>5-4 영어</td>
-<td>5-8 영어</td>
-</tr>
-
-<tr>
-<td>4교시</td>
-<td>
-<div class="lunchRed">LUNCH 11:20-12:20</div>
-6-1 영어
-</td>
-
-<td></td>
-
-<td>
-<div class="lunchRed">LUNCH 11:20-12:20</div>
-6-7 영어
-</td>
-
-<td>5-1 영어</td>
-
-<td>
-5-9 영어
-<div class="lunchPurple">LUNCH 12:10-13:10</div>
-</td>
-
-</tr>
-
-<tr>
-<td>5교시</td>
-<td>6-2 영어</td>
-<td></td>
-<td>6-8 영어</td>
-<td>5-2 영어</td>
-<td></td>
-</tr>
-
-<tr>
-<td>6교시</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-
+<tr><td>1교시</td><td></td><td></td><td></td><td>5-6 영어</td><td>5-3 영어</td></tr>
+<tr><td>2교시</td><td>6-4 영어</td><td></td><td>6-5 영어</td><td>5-5 영어</td><td>5-7 영어</td></tr>
+<tr><td>3교시</td><td>6-3 영어</td><td></td><td>6-6 영어</td><td>5-4 영어</td><td>5-8 영어</td></tr>
+<tr><td>4교시</td><td><div class="lunchRed">LUNCH 11:20-12:20</div>6-1 영어</td><td></td><td><div class="lunchRed">LUNCH 11:20-12:20</div>6-7 영어</td><td>5-1 영어</td><td>5-9 영어<div class="lunchPurple">LUNCH 12:10-13:10</div></td></tr>
+<tr><td>5교시</td><td>6-2 영어</td><td></td><td>6-8 영어</td><td>5-2 영어</td><td></td></tr>
+<tr><td>6교시</td><td></td><td></td><td></td><td></td><td></td></tr>
 </table>
-
 </div>
 </div>
 
 <script>
-
 /* ================= API ================= */
-
 const API_KEY="fa9fe37b9be14839fe6774643939e974";
 
 /* ================= SCHEDULE ================= */
-
 const schedule={
 Monday:[null,"6-4 English","6-3 English","6-1 English","6-2 English",null],
 Tuesday:["Unavailable","Unavailable","Unavailable","Unavailable","Unavailable","Unavailable"],
@@ -292,26 +118,15 @@ Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
 };
 
 /* ================= DATE ================= */
-
 const now=new Date();
 
-/* ===== DEBUG DAY (for weekend testing) ===== */
-/* change to Monday, Tuesday, Wednesday, Thursday, Friday */
-
-let today="Monday";
-
-/* if you want automatic again later, use this instead:
-let today=now.toLocaleDateString("en-US",{weekday:"long"});
-*/
-
+/* ===== DEBUG DAY ===== */
+let today="Monday"; // change to test other days
 document.getElementById("today").textContent=today;
 
 /* ================= BUILD TABLE ================= */
-
 const table=document.getElementById("scheduleTable");
-
 const dailyBlocks={
-
 Monday:[
 {type:"class",label:"1교시",start:"09:00",end:"09:40"},
 {type:"break",start:"09:40",end:"09:50"},
@@ -325,7 +140,6 @@ Monday:[
 {type:"break",start:"13:50",end:"14:00"},
 {type:"class",label:"6교시",start:"14:00",end:"14:40"}
 ],
-
 Wednesday:[
 {type:"class",label:"1교시",start:"09:00",end:"09:40"},
 {type:"break",start:"09:40",end:"09:50"},
@@ -339,7 +153,6 @@ Wednesday:[
 {type:"break",start:"13:50",end:"14:00"},
 {type:"class",label:"6교시",start:"14:00",end:"14:40"}
 ],
-
 Thursday:[
 {type:"class",label:"1교시",start:"09:00",end:"09:40"},
 {type:"break",start:"09:40",end:"09:50"},
@@ -352,7 +165,6 @@ Thursday:[
 {type:"break",start:"13:50",end:"14:00"},
 {type:"class",label:"6교시",start:"14:00",end:"14:40"}
 ],
-
 Friday:[
 {type:"class",label:"1교시",start:"09:00",end:"09:40"},
 {type:"break",start:"09:40",end:"09:50"},
@@ -365,288 +177,124 @@ Friday:[
 {type:"break",start:"13:50",end:"14:00"},
 {type:"class",label:"6교시",start:"14:00",end:"14:40"}
 ]
-
 };
-
-/* fallback day so weekends still show schedule */
-
 const activeDay=dailyBlocks[today]?today:"Monday";
-
 const blocks=dailyBlocks[activeDay];
-
 let classIndex=0;
-
 blocks.forEach((b)=>{
-
 if(b.type==="break") return;
-
 let row=document.createElement("tr");
 row.dataset.start=b.start;
 row.dataset.end=b.end;
-let p=document.createElement("td");
-p.textContent=b.label;
-
+let p=document.createElement("td"); p.textContent=b.label;
 let c=document.createElement("td");
-
-if(b.type==="class"){
-c.textContent=(schedule[activeDay]||[])[classIndex]||"-";
-classIndex++;
-}
-
-if(b.type==="lunch"){
-c.innerHTML='<span class="lunchText">LUNCH</span>';
-}
-
-row.appendChild(p);
-row.appendChild(c);
-table.appendChild(row);
-
+if(b.type==="class"){ c.textContent=(schedule[activeDay]||[])[classIndex]||"-"; classIndex++; }
+if(b.type==="lunch"){ c.innerHTML='<span class="lunchText">LUNCH</span>'; }
+row.appendChild(p); row.appendChild(c); table.appendChild(row);
 });
+
 /* ================= CURRENT CLASS DETECTOR ================= */
-
 function updateCurrentClass(){
-
-const now=new Date();
-const minutesNow=now.getHours()*60+now.getMinutes();
-
+const now=new Date(); const minutesNow=now.getHours()*60+now.getMinutes();
 const rows=document.querySelectorAll("#scheduleTable tr");
-
 rows.forEach(row=>{
-
-const start=row.dataset.start;
-const end=row.dataset.end;
-
-if(!start || !end) return;
-
-const [sh,sm]=start.split(":").map(Number);
-const [eh,em]=end.split(":").map(Number);
-
-const startMin=sh*60+sm;
-const endMin=eh*60+em;
-
+const start=row.dataset.start; const end=row.dataset.end; if(!start||!end) return;
+const [sh,sm]=start.split(":").map(Number); const [eh,em]=end.split(":").map(Number);
+const startMin=sh*60+sm; const endMin=eh*60+em;
 row.classList.remove("currentClass");
-
-if(minutesNow>=startMin && minutesNow<endMin){
-row.classList.add("currentClass");
-}
-
+if(minutesNow>=startMin && minutesNow<endMin){ row.classList.add("currentClass"); }
 });
-
 }
-
 setInterval(updateCurrentClass,10000);
 updateCurrentClass();
-/* ================= CLOCK ================= */
 
+/* ================= CLOCK ================= */
 const canvas=document.getElementById("clock");
 const ctx=canvas.getContext("2d");
-
-function toMin(t){
-let[h,m]=t.split(":");
-return h*60+ +m;
-}
-
+function toMin(t){let[h,m]=t.split(":"); return h*60+m;}
 function highlightSchedule(label,type){
-
+document.querySelectorAll("#scheduleTable tr").forEach(r=>{ r.classList.remove("activeRowClass","activeRowLunch"); });
 document.querySelectorAll("#scheduleTable tr").forEach(r=>{
-r.classList.remove("activeRowClass","activeRowLunch");
-});
-
-document.querySelectorAll("#scheduleTable tr").forEach(r=>{
-let td=r.querySelector("td");
-
-if(td && td.textContent===label){
-
+let td=r.querySelector("td"); if(td && td.textContent===label){
 if(type==="class") r.classList.add("activeRowClass");
 if(type==="lunch") r.classList.add("activeRowLunch");
-
+}});
 }
-});
-
-}
-
 function drawClock(){
-
 let now=new Date();
 let mins=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
-
 ctx.clearRect(0,0,300,300);
-
 /* face */
-
-ctx.beginPath();
-ctx.arc(150,150,140,0,Math.PI*2);
-ctx.fillStyle="#1f3a5f";
-ctx.fill();
-
+ctx.beginPath(); ctx.arc(150,150,140,0,Math.PI*2); ctx.fillStyle="#1f3a5f"; ctx.fill();
 /* ticks */
-
 for(let i=0;i<60;i++){
-
-let angle=i*Math.PI/30;
-let len=i%5==0?15:7;
-
-let x1=150+Math.cos(angle)*(120-len);
-let y1=150+Math.sin(angle)*(120-len);
-
-let x2=150+Math.cos(angle)*120;
-let y2=150+Math.sin(angle)*120;
-
-ctx.beginPath();
-ctx.moveTo(x1,y1);
-ctx.lineTo(x2,y2);
-ctx.strokeStyle="white";
-ctx.lineWidth=i%5==0?3:1;
-ctx.stroke();
-
+let angle=i*Math.PI/30; let len=i%5==0?15:7;
+let x1=150+Math.cos(angle)*(120-len); let y1=150+Math.sin(angle)*(120-len);
+let x2=150+Math.cos(angle)*120; let y2=150+Math.sin(angle)*120;
+ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+ctx.strokeStyle="white"; ctx.lineWidth=i%5==0?3:1; ctx.stroke();
 }
-
 /* active block */
-
 let active=null;
-
-for(let b of blocks){
-
-let s=toMin(b.start);
-let e=toMin(b.end);
-
-if(mins>=s && mins<=e){
-active=b;
-break;
-}
-
-}
-
-let label="Free Time";
-let color="grey";
-
+for(let b of blocks){ let s=toMin(b.start); let e=toMin(b.end); if(mins>=s && mins<=e){ active=b; break; } }
+let label="Free Time"; let color="gray";
 if(active){
-
 label=active.label;
-
 if(active.type==="class") color="red";
 if(active.type==="break") color="blue";
-if(active.type==="lunch") color="yellow";
-
+if(active.type==="lunch") color="red";
 highlightSchedule(active.label,active.type);
-
 }
-
-/* countdown arc */
-
+/* countdown arc with pulse */
 if(active){
-
 let total=toMin(active.end)-toMin(active.start);
 let remain=toMin(active.end)-mins;
-
 let percent=remain/total;
-
 let end=-Math.PI/2+percent*2*Math.PI;
-
-ctx.beginPath();
-ctx.arc(150,150,105,-Math.PI/2,end);
-
+ctx.beginPath(); ctx.arc(150,150,105,-Math.PI/2,end);
 let pulse=6+Math.sin(Date.now()/200)*2;
-
-ctx.lineWidth=pulse;
-ctx.strokeStyle=color;
-ctx.stroke();
-
+ctx.lineWidth=pulse; ctx.strokeStyle=color; ctx.stroke();
 }
-
 /* DIGITAL CLOCK */
-
-let h=now.getHours();
-let m=now.getMinutes().toString().padStart(2,"0");
-let s=now.getSeconds().toString().padStart(2,"0");
-
+let h=now.getHours(); let m=now.getMinutes().toString().padStart(2,"0"); let s=now.getSeconds().toString().padStart(2,"0");
 let ampm=h>=12?"PM":"AM";
-
-h=h%12;
-if(h==0)h=12;
-
-ctx.fillStyle="white";
-ctx.font="28px Arial";
-ctx.textAlign="center";
-ctx.textBaseline="middle";
-
+h=h%12; if(h==0)h=12;
+ctx.fillStyle="white"; ctx.font="28px Arial"; ctx.textAlign="center"; ctx.textBaseline="middle";
 ctx.fillText(`${h}:${m}:${s} ${ampm}`,150,150);
-
 document.getElementById("periodLabel").textContent=label;
 document.getElementById("periodLabel").style.color=color;
-
 }
-
 setInterval(drawClock,1000);
 
 /* ================= WEATHER ================= */
-
 async function loadWeather(){
-
 try{
-
 const geoRes=await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`);
-const geoData=await geoRes.json();
-
-const lat=geoData[0].lat;
-const lon=geoData[0].lon;
-
+const geoData=await geoRes.json(); const lat=geoData[0].lat; const lon=geoData[0].lon;
 const res=await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
 const data=await res.json();
-
 document.getElementById("weather").textContent=`🌤 Weather: ${data.weather[0].main} / ${data.main.temp.toFixed(1)}°C`;
-
-}catch{
-
-document.getElementById("weather").textContent="Weather Unavailable";
-
+}catch{ document.getElementById("weather").textContent="Weather Unavailable"; }
 }
-
-}
+loadWeather();
 
 /* ================= AIR ================= */
-
 async function loadAir(){
-
 try{
-
 const geoRes=await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`);
-const geoData=await geoRes.json();
-
-const lat=geoData[0].lat;
-const lon=geoData[0].lon;
-
+const geoData=await geoRes.json(); const lat=geoData[0].lat; const lon=geoData[0].lon;
 const res=await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
-const data=await res.json();
-
-const aqi=data.list[0].main.aqi;
-
+const data=await res.json(); const aqi=data.list[0].main.aqi;
 const levels=["Good 😊","Fair 🙂","Moderate 😐","Poor 😷","Very Poor ☠️"];
-
 document.getElementById("air").textContent=`😷 Air Quality: ${levels[aqi-1]}`;
-
-}catch{
-
-document.getElementById("air").textContent="Air Quality Unavailable";
-
+}catch{ document.getElementById("air").textContent="Air Quality Unavailable"; }
 }
-
-}
-
-loadWeather();
 loadAir();
 
 /* ================= POPUP ================= */
-
 const weekPopup=document.getElementById("weekPopup");
-
-document.getElementById("today").onclick=()=>{
-weekPopup.style.display="flex";
-}
-
-weekPopup.onclick=()=>{
-weekPopup.style.display="none";
-}
+document.getElementById("today").onclick=()=>{ weekPopup.style.display="flex"; }
+weekPopup.onclick=()=>{ weekPopup.style.display="none"; }
 
 </script>
 
