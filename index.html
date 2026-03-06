@@ -101,7 +101,7 @@ display:none;
 
 <div class="container">
 
-<div class="card clockWrap" aria-label="Class countdown clock">
+<div class="card clockWrap">
 
 <canvas id="clock" width="260" height="260"></canvas>
 
@@ -116,13 +116,10 @@ display:none;
 
 <h2>Weather</h2>
 
-<div class="weatherRow">
-<div id="temp">--°C</div>
-<div id="weather">--</div>
-</div>
+<div id="weather">Loading...</div>
 
 <div style="margin-top:10px">
-Air Quality: <span id="air">--</span>
+Air Quality: <span id="air">Loading...</span>
 </div>
 
 </div>
@@ -132,7 +129,7 @@ Air Quality: <span id="air">--</span>
 
 <h2 id="todayTitle">Today's Classes</h2>
 
-<table id="todaySchedule" aria-label="Today's class schedule"></table>
+<table id="todaySchedule"></table>
 
 <div id="noClasses" style="display:none;text-align:center;padding:10px">
 No Classes Today
@@ -171,7 +168,84 @@ No Classes Today
 
 <script>
 
-/* WEEKLY CLASS LIST */
+const API_KEY="fa9fe37b9be14839fe6774643939e974"
+
+
+/* ================= WEATHER (YOUR CODE) ================= */
+
+async function loadWeather() {
+
+    try {
+
+        const geoRes = await fetch(
+            `https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`
+        );
+
+        const geoData = await geoRes.json();
+
+        const lat = geoData[0].lat;
+        const lon = geoData[0].lon;
+
+        const res = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
+        );
+
+        const data = await res.json();
+
+        document.getElementById("weather").textContent =
+            `${data.weather[0].main} / ${data.main.temp.toFixed(1)}°C`;
+
+    } catch {
+
+        document.getElementById("weather").textContent =
+            "Unavailable";
+    }
+}
+
+
+/* ================= AIR ================= */
+
+async function loadAir() {
+
+    try {
+
+        const geoRes = await fetch(
+            `https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`
+        );
+
+        const geoData = await geoRes.json();
+
+        const lat = geoData[0].lat;
+        const lon = geoData[0].lon;
+
+        const res = await fetch(
+            `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`
+        );
+
+        const data = await res.json();
+
+        const aqi = data.list[0].main.aqi;
+
+        const levels = [
+            "Good 😊",
+            "Fair 🙂",
+            "Moderate 😐",
+            "Poor 😷",
+            "Very Poor ☠️"
+        ];
+
+        document.getElementById("air").textContent =
+            levels[aqi-1];
+
+    } catch {
+
+        document.getElementById("air").textContent =
+            "Unavailable";
+    }
+}
+
+
+/* ================= SCHEDULE ================= */
 
 const schedule={
 Monday:[null,"6-4 English","6-3 English","6-1 English","6-2 English",null],
@@ -182,95 +256,22 @@ Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
 }
 
 
-/* DAY-SPECIFIC TIME BLOCKS */
-
-const dayBlocks={
-
-Monday:[
+const blocks=[
 
 {type:"class",label:"1st Period",start:"09:00",end:"09:40"},
 {type:"break",start:"09:40",end:"09:50"},
-
 {type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
 {type:"break",start:"10:30",end:"10:40"},
-
 {type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
 {type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
-
 {type:"class",label:"4th Period",start:"12:20",end:"13:00"},
 {type:"break",start:"13:00",end:"13:10"},
-
 {type:"class",label:"5th Period",start:"13:10",end:"13:50"},
 {type:"break",start:"13:50",end:"14:00"},
-
-{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
-
-],
-
-Wednesday:[
-
-{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-
-{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-
-{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
-{type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
-
-{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
-{type:"break",start:"13:00",end:"13:10"},
-
-{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-
-{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
-
-],
-
-Thursday:[
-
-{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-
-{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-
-{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
-{type:"break",start:"11:20",end:"12:20"},
-
-{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
-{type:"lunch",label:"Lunch",start:"13:00",end:"13:10"},
-
-{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-
-{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
-
-],
-
-Friday:[
-
-{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-
-{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-
-{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
-{type:"break",start:"11:20",end:"12:20"},
-
-{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
-{type:"lunch",label:"Lunch",start:"13:00",end:"13:10"},
-
-{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-
 {type:"class",label:"6th Period",start:"14:00",end:"14:40"}
 
 ]
 
-}
 
 function toMin(t){
 let [h,m]=t.split(":")
@@ -278,14 +279,10 @@ return parseInt(h)*60+parseInt(m)
 }
 
 
-/* CLOCK */
+/* ================= CLOCK ================= */
 
 const canvas=document.getElementById("clock")
 const ctx=canvas.getContext("2d")
-
-let today=new Date().toLocaleDateString("en-US",{weekday:"long"})
-
-let blocks=dayBlocks[today]||[]
 
 function drawClock(){
 
@@ -303,47 +300,6 @@ ctx.beginPath()
 ctx.arc(130,130,120,0,Math.PI*2)
 ctx.fillStyle="black"
 ctx.fill()
-
-/* ticks */
-
-ctx.strokeStyle="white"
-for(let i=0;i<60;i++){
-
-let angle=(i*Math.PI*2)/60
-let inner=(i%5===0)?90:100
-let outer=110
-
-let x1=130+inner*Math.sin(angle)
-let y1=130-inner*Math.cos(angle)
-
-let x2=130+outer*Math.sin(angle)
-let y2=130-outer*Math.cos(angle)
-
-ctx.beginPath()
-ctx.moveTo(x1,y1)
-ctx.lineTo(x2,y2)
-ctx.stroke()
-
-}
-
-/* hands */
-
-let hour=(h%12)+m/60
-let hourAngle=hour*Math.PI/6
-let minAngle=(m+s/60)*Math.PI/30
-
-ctx.lineWidth=4
-ctx.beginPath()
-ctx.moveTo(130,130)
-ctx.lineTo(130+60*Math.sin(hourAngle),130-60*Math.cos(hourAngle))
-ctx.stroke()
-
-ctx.lineWidth=3
-ctx.beginPath()
-ctx.moveTo(130,130)
-ctx.lineTo(130+90*Math.sin(minAngle),130-90*Math.cos(minAngle))
-ctx.stroke()
-
 
 let active=null
 
@@ -389,66 +345,6 @@ document.getElementById("clockLabel").innerText=active.label
 
 }
 
-/* BUILD TODAY TABLE */
-
-let todayList=schedule[today]
-
-let table=document.getElementById("todaySchedule")
-
-if(todayList){
-
-todayList.forEach((c,i)=>{
-
-let row=document.createElement("tr")
-
-let p=document.createElement("td")
-p.innerText=(i+1)+"교시"
-
-let cls=document.createElement("td")
-cls.innerText=c||"-"
-
-row.appendChild(p)
-row.appendChild(cls)
-
-table.appendChild(row)
-
-})
-
-}else{
-
-document.getElementById("noClasses").style.display="block"
-
-}
-
-
-/* WEATHER */
-
-const API="fa9fe37b9be14839fe6774643939e974"
-
-fetch(`https://api.openweathermap.org/data/2.5/weather?q=Dangjin&units=metric&appid=${API}`)
-.then(r=>r.json())
-.then(d=>{
-document.getElementById("temp").innerText=Math.round(d.main.temp)+"°C"
-document.getElementById("weather").innerText=d.weather[0].main
-})
-
-fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=36.89&lon=126.63&appid=${API}`)
-.then(r=>r.json())
-.then(d=>{
-
-let aqi=d.list[0].main.aqi
-
-let text="Good"
-
-if(aqi==2)text="Fair"
-if(aqi==3)text="Moderate"
-if(aqi==4)text="Poor"
-if(aqi==5)text="Very Poor"
-
-document.getElementById("air").innerText=text
-
-})
-
 
 function toggleWeek(){
 
@@ -458,9 +354,13 @@ w.style.display=(w.style.display=="block")?"none":"block"
 
 }
 
+
 setInterval(drawClock,1000)
 
 drawClock()
+
+loadWeather()
+loadAir()
 
 </script>
 
