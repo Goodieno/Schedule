@@ -127,15 +127,29 @@ function drawClock(){
   ctx.fill();
 
   // FIND CLASS OR BREAK
-  let activeStart=null, activeEnd=null, color="blue";
+  let activeStart=null, activeEnd=null, color=null;
   for(let i=0;i<periods.length;i++){
     let start=toMinutes(periods[i].start);
     let end=toMinutes(periods[i].end);
-    if(nowMin>=start && nowMin<=end){ activeStart=start; activeEnd=end; color="red"; break; }
+
+    // Class time → RED
+    if(nowMin>=start && nowMin<=end){
+      activeStart=start;
+      activeEnd=end;
+      color="red";
+      break;
+    }
+
+    // Break time → BLUE
     if(i<periods.length-1){
       let breakStart=end;
       let breakEnd=toMinutes(periods[i+1].start);
-      if(nowMin>breakStart && nowMin<breakEnd){ activeStart=breakStart; activeEnd=breakEnd; color="blue"; break; }
+      if(nowMin>breakStart && nowMin<breakEnd){
+        activeStart=breakStart;
+        activeEnd=breakEnd;
+        color="blue";
+        break;
+      }
     }
   }
 
