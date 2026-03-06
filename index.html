@@ -118,6 +118,20 @@ text-align:left;
 width:100%;
 border-collapse:collapse;
 text-align:center;
+table-layout:fixed;
+}
+
+#weekTable th,
+#weekTable td{
+word-wrap:break-word;
+}
+
+#weekTable th{
+width:20%;
+}
+
+#weekTable th:first-child{
+width:12%;
 }
 
 #weekTable th{
@@ -305,8 +319,6 @@ let[h,m]=t.split(":");
 return h*60+ +m;
 }
 
-/* simplified block system */
-
 const blocks=[
 {type:"class",label:"1교시",start:"09:00",end:"09:40"},
 {type:"break",start:"09:40",end:"09:50"},
@@ -328,7 +340,7 @@ let mins=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
 
 ctx.clearRect(0,0,300,300);
 
-/* clock face */
+/* face */
 
 ctx.beginPath();
 ctx.arc(150,150,140,0,Math.PI*2);
@@ -390,14 +402,22 @@ let remain=toMin(active.end)-mins;
 let percent=remain/total;
 let end=-Math.PI/2+percent*2*Math.PI;
 
+/* smooth glow pulse */
+
+let pulse=(Math.sin(Date.now()/400)+1)/2;
+let glow=5+pulse*35;
+
 ctx.beginPath();
 ctx.arc(150,150,105,-Math.PI/2,end);
 
-let pulse=6+Math.sin(Date.now()/200)*2;
+ctx.shadowColor=color;
+ctx.shadowBlur=glow;
 
-ctx.lineWidth=pulse;
+ctx.lineWidth=8;
 ctx.strokeStyle=color;
 ctx.stroke();
+
+ctx.shadowBlur=0;
 
 }
 
@@ -426,7 +446,14 @@ labelBox.style.color=color;
 
 }
 
-setInterval(drawClock,1000);
+/* 60fps animation */
+
+function animate(){
+drawClock();
+requestAnimationFrame(animate);
+}
+
+animate();
 
 /* ================= WEATHER ================= */
 
