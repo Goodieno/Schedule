@@ -4,54 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Schedule</title>
-
 <style>
-
 body{
-font-family:Arial;
-background:#f2f2f2;
-text-align:center;
-padding:20px;
+  font-family:Arial;
+  background:#f2f2f2;
+  text-align:center;
+  padding:20px;
 }
-
 h1{margin-bottom:5px;}
-
 #today{font-size:22px;margin-bottom:20px;}
-
-table{
-margin:auto;
-border-collapse:collapse;
-background:white;
-}
-
-td,th{
-border:1px solid #ccc;
-padding:10px 18px;
-font-size:18px;
-}
-
+table{margin:auto;border-collapse:collapse;background:white;}
+td,th{border:1px solid #ccc;padding:10px 18px;font-size:18px;}
 th{background:#eee;}
-
-#nextClass{
-margin-top:20px;
-font-size:22px;
-font-weight:bold;
-}
-
-#clockTitle{
-font-size:20px;
-margin-top:20px;
-font-weight:bold;
-}
-
-canvas{
-margin-top:10px;
-border-radius:50%;
-}
-
+#nextClass{margin-top:20px;font-size:22px;font-weight:bold;}
+#clockTitle{font-size:20px;margin-top:20px;font-weight:bold;}
+canvas{margin-top:10px;border-radius:50%;}
 </style>
 </head>
-
 <body>
 
 <h1>Today's Classes</h1>
@@ -67,79 +36,70 @@ border-radius:50%;
 <canvas id="clock" width="260" height="260"></canvas>
 
 <script>
-
 // WEEKLY CLASS LIST
 const schedule={
-Monday:[null,"6-4 English","6-3 English","6-1 English","6-2 English",null],
-Tuesday:["Unavailable","Unavailable","Unavailable","Unavailable","Unavailable","Unavailable"],
-Wednesday:[null,"6-5 English","6-6 English","6-7 English","6-8 English",null],
-Thursday:["5-6 English","5-5 English","5-4 English","5-1 English","5-2 English",null],
-Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
+  Monday:[null,"6-4 English","6-3 English","6-1 English","6-2 English",null],
+  Tuesday:["Unavailable","Unavailable","Unavailable","Unavailable","Unavailable","Unavailable"],
+  Wednesday:[null,"6-5 English","6-6 English","6-7 English","6-8 English",null],
+  Thursday:["5-6 English","5-5 English","5-4 English","5-1 English","5-2 English",null],
+  Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
 };
-
 
 // TIME BLOCKS PER DAY
-
 const timeBlocks={
-
-Monday:[
-{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
-{type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
-{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
-{type:"break",start:"13:00",end:"13:10"},
-{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
-],
-
-Wednesday:[
-{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
-{type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
-{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
-{type:"break",start:"13:00",end:"13:10"},
-{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
-],
-
-Thursday:[
-{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
-{type:"break",start:"11:20",end:"12:20"},
-{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
-{type:"lunch",label:"Lunch",start:"13:00",end:"13:10"},
-{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
-],
-
-Friday:[
-{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
-{type:"break",start:"11:20",end:"12:20"},
-{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
-{type:"lunch",label:"Lunch",start:"13:00",end:"13:10"},
-{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
-]
-
+  Monday:[
+    {type:"class",label:"1st Period",start:"09:00",end:"09:40"},
+    {type:"break",start:"09:40",end:"09:50"},
+    {type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
+    {type:"break",start:"10:30",end:"10:40"},
+    {type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
+    {type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
+    {type:"class",label:"4th Period",start:"12:20",end:"13:00"},
+    {type:"break",start:"13:00",end:"13:10"},
+    {type:"class",label:"5th Period",start:"13:10",end:"13:50"},
+    {type:"break",start:"13:50",end:"14:00"},
+    {type:"class",label:"6th Period",start:"14:00",end:"14:40"}
+  ],
+  Wednesday:[
+    {type:"class",label:"1st Period",start:"09:00",end:"09:40"},
+    {type:"break",start:"09:40",end:"09:50"},
+    {type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
+    {type:"break",start:"10:30",end:"10:40"},
+    {type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
+    {type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
+    {type:"class",label:"4th Period",start:"12:20",end:"13:00"},
+    {type:"break",start:"13:00",end:"13:10"},
+    {type:"class",label:"5th Period",start:"13:10",end:"13:50"},
+    {type:"break",start:"13:50",end:"14:00"},
+    {type:"class",label:"6th Period",start:"14:00",end:"14:40"}
+  ],
+  Thursday:[
+    {type:"class",label:"1st Period",start:"09:00",end:"09:40"},
+    {type:"break",start:"09:40",end:"09:50"},
+    {type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
+    {type:"break",start:"10:30",end:"10:40"},
+    {type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
+    {type:"break",start:"11:20",end:"12:20"},
+    {type:"class",label:"4th Period",start:"12:20",end:"13:00"},
+    {type:"lunch",label:"Lunch",start:"13:00",end:"13:10"},
+    {type:"class",label:"5th Period",start:"13:10",end:"13:50"},
+    {type:"break",start:"13:50",end:"14:00"},
+    {type:"class",label:"6th Period",start:"14:00",end:"14:40"}
+  ],
+  Friday:[
+    {type:"class",label:"1st Period",start:"09:00",end:"09:40"},
+    {type:"break",start:"09:40",end:"09:50"},
+    {type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
+    {type:"break",start:"10:30",end:"10:40"},
+    {type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
+    {type:"break",start:"11:20",end:"12:20"},
+    {type:"class",label:"4th Period",start:"12:20",end:"13:00"},
+    {type:"lunch",label:"Lunch",start:"13:00",end:"13:10"},
+    {type:"class",label:"5th Period",start:"13:10",end:"13:50"},
+    {type:"break",start:"13:50",end:"14:00"},
+    {type:"class",label:"6th Period",start:"14:00",end:"14:40"}
+  ]
 };
-
 
 // HOLIDAYS
 const holidays=["2026-03-01","2026-05-05","2026-06-06"];
@@ -154,143 +114,74 @@ const table=document.getElementById("scheduleTable");
 const nextDiv=document.getElementById("nextClass");
 const clockTitle=document.getElementById("clockTitle");
 
-
 // HOLIDAY
 if(holidays.includes(todayISO)){
-todayText.innerHTML="Holiday 🇰🇷";
+  todayText.innerHTML="Holiday 🇰🇷";
 }else{
-todayText.innerHTML=day;
+  todayText.innerHTML=day;
 }
-
 
 // BUILD TABLE
 const todaySchedule=schedule[day];
-
 if(todaySchedule){
-todaySchedule.forEach((cls,i)=>{
-let row=document.createElement("tr");
-let p=document.createElement("td");
-p.innerText=(i+1)+"교시";
-let c=document.createElement("td");
-c.innerText=cls || "-";
-row.appendChild(p);
-row.appendChild(c);
-table.appendChild(row);
-});
+  todaySchedule.forEach((cls,i)=>{
+    let row=document.createElement("tr");
+    let p=document.createElement("td");
+    p.innerText=(i+1)+"교시";
+    let c=document.createElement("td");
+    c.innerText=cls || "-";
+    row.appendChild(p);
+    row.appendChild(c);
+    table.appendChild(row);
+  });
 }
-
 
 // TIME HELPER
 function toMinutes(t){
-let [h,m]=t.split(":");
-return parseInt(h)*60+parseInt(m);
+  let [h,m]=t.split(":");
+  return parseInt(h)*60+parseInt(m);
 }
-
 
 // CLOCK
 const canvas=document.getElementById("clock");
 const ctx=canvas.getContext("2d");
 
 function drawClock(){
+  let now=new Date();
+  let h=now.getHours();
+  let m=now.getMinutes();
+  let s=now.getSeconds();
+  let nowMin=h*60+m+s/60;
 
-let now=new Date();
-let h=now.getHours();
-let m=now.getMinutes();
-let s=now.getSeconds();
+  ctx.clearRect(0,0,260,260);
 
-let nowMin=h*60+m+s/60;
+  // face
+  ctx.beginPath();
+  ctx.arc(130,130,120,0,Math.PI*2);
+  ctx.fillStyle="black";
+  ctx.fill();
 
-ctx.clearRect(0,0,260,260);
+  let blocks=timeBlocks[day];
+  let active=null;
+  if(blocks){
+    for(let b of blocks){
+      let start=toMinutes(b.start);
+      let end=toMinutes(b.end);
+      if(nowMin>=start && nowMin<=end){
+        active=b;
+        break;
+      }
+    }
+  }
 
-// face
-ctx.beginPath();
-ctx.arc(130,130,120,0,Math.PI*2);
-ctx.fillStyle="black";
-ctx.fill();
+  let color=null;
+  if(active){
+    if(active.type==="class") color="red";
+    if(active.type==="break") color="blue";
+    if(active.type==="lunch") color="yellow";
 
-let blocks=timeBlocks[day];
+    clockTitle.innerText=active.label || active.type;
 
-let active=null;
-
-if(blocks){
-for(let b of blocks){
-
-let start=toMinutes(b.start);
-let end=toMinutes(b.end);
-
-if(nowMin>=start && nowMin<=end){
-active=b;
-break;
-}
-
-}
-}
-
-let color="blue";
-
-if(active){
-
-if(active.type==="class") color="red";
-if(active.type==="break") color="blue";
-if(active.type==="lunch") color="yellow";
-
-clockTitle.innerText=active.label || active.type;
-
-let total=toMinutes(active.end)-toMinutes(active.start);
-let remain=toMinutes(active.end)-nowMin;
-let percent=remain/total;
-
-let endAngle=-Math.PI/2 + percent*(Math.PI*2);
-
-ctx.beginPath();
-ctx.arc(130,130,100,-Math.PI/2,endAngle);
-ctx.strokeStyle=color;
-ctx.lineWidth=12;
-ctx.stroke();
-
-}else{
-clockTitle.innerText="";
-}
-
-
-// ticks
-ctx.strokeStyle="white";
-ctx.lineWidth=2;
-
-for(let i=0;i<60;i++){
-let angle=(i*Math.PI*2)/60;
-let inner=(i%5===0)?90:100;
-let outer=110;
-
-let x1=130+inner*Math.sin(angle);
-let y1=130-inner*Math.cos(angle);
-let x2=130+outer*Math.sin(angle);
-let y2=130-outer*Math.cos(angle);
-
-ctx.beginPath();
-ctx.moveTo(x1,y1);
-ctx.lineTo(x2,y2);
-ctx.stroke();
-}
-
-
-// digital
-ctx.fillStyle="white";
-ctx.font="24px monospace";
-ctx.textAlign="center";
-
-let timeString=
-String(h).padStart(2,"0")+":"+
-String(m).padStart(2,"0")+":"+
-String(s).padStart(2,"0");
-
-ctx.fillText(timeString,130,150);
-
-}
-
-setInterval(drawClock,1000);
-
-</script>
-
-</body>
-</html>
+    let total=toMinutes(active.end)-toMinutes(active.start);
+    let remain=toMinutes(active.end)-nowMin;
+    let percent=
