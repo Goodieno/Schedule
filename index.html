@@ -4,96 +4,84 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Tapdong TV Calendar</title>
+<title>Teacher Timer</title>
 
 <style>
 
-/* ================= BODY ================= */
+/* ================= THEME ================= */
 
 body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#0f1c2e;
-    color:white;
+background:#0b1626;
+font-family:Arial;
+color:white;
+text-align:center;
+margin:0;
+padding:20px;
 }
 
-/* ================= HEADER ================= */
-
-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:15px 25px;
-    font-size:20px;
-}
-
-.info{
-    display:flex;
-    gap:25px;
-    align-items:center;
-}
-
-.bold{
-    font-weight:bold;
+h2{
+margin:10px 0;
 }
 
 /* ================= CLOCK ================= */
 
-#clockContainer{
-    display:flex;
-    justify-content:center;
-    margin-top:20px;
+#clockBox{
+margin:auto;
+width:320px;
 }
 
 canvas{
-    background:#132a46;
-    border-radius:50%;
+background:#1f3a5f;
+border-radius:50%;
+box-shadow:0 0 20px rgba(0,140,255,.4);
 }
 
-/* ================= COUNTDOWN ================= */
+/* ================= GLOW ================= */
 
-#countdown{
-    position:absolute;
-    text-align:center;
-    font-size:28px;
-    font-weight:bold;
-    margin-top:150px;
+@keyframes pulse{
+0%{box-shadow:0 0 10px rgba(0,140,255,.3);}
+50%{box-shadow:0 0 30px rgba(0,140,255,.9);}
+100%{box-shadow:0 0 10px rgba(0,140,255,.3);}
+}
+
+.activeGlow{
+animation:pulse 2s infinite;
+}
+
+/* ================= INFO ================= */
+
+#info{
+margin-top:20px;
+font-size:18px;
+}
+
+#weather{
+font-weight:bold;
+margin-top:5px;
+}
+
+#air{
+font-weight:bold;
+margin-top:5px;
 }
 
 /* ================= SCHEDULE ================= */
 
-#schedule{
-    width:90%;
-    margin:auto;
-    margin-top:30px;
-    border-collapse:collapse;
+table{
+margin:auto;
+margin-top:20px;
+border-collapse:collapse;
+width:95%;
+max-width:400px;
 }
 
-#schedule td{
-    padding:10px;
-    border-bottom:1px solid rgba(255,255,255,0.2);
+th,td{
+padding:10px;
+border-bottom:1px solid #333;
 }
 
-/* ================= CURRENT CLASS GLOW ================= */
-
-.current{
-    animation:pulse 2s infinite;
-}
-
-@keyframes pulse{
-
-0%{
-box-shadow:0 0 10px #4da6ff;
-}
-
-50%{
-box-shadow:0 0 25px #4da6ff;
-}
-
-100%{
-box-shadow:0 0 10px #4da6ff;
-}
-
+th{
+color:#9cc9ff;
 }
 
 </style>
@@ -101,182 +89,281 @@ box-shadow:0 0 10px #4da6ff;
 
 <body>
 
-<header>
+<h2 id="today"></h2>
 
-<div id="date"></div>
-
-<div class="info">
-
-<div>
-🌤 <span class="bold">Weather:</span>
-<span id="weather">Loading...</span>
+<div id="clockBox" class="activeGlow">
+<canvas id="clock" width="300" height="300"></canvas>
 </div>
 
-<div>
-😷 <span class="bold">Air Quality:</span>
-<span id="air">Loading...</span>
-</div>
+<div id="info">
+
+<div id="weather">🌤 Weather</div>
+
+<div id="air">😷 Air Quality</div>
 
 </div>
 
-</header>
-
-<div id="clockContainer">
-<canvas id="clock" width="320" height="320"></canvas>
-<div id="countdown"></div>
-</div>
-
-<table id="schedule"></table>
+<table id="scheduleTable">
+<tr>
+<th>Period</th>
+<th>Class</th>
+</tr>
+</table>
 
 <script>
 
-/* ================= API KEY ================= */
+/* ================= API ================= */
 
-const API_KEY = "fa9fe37b9be14839fe6774643939e974";
+const API_KEY="fa9fe37b9be14839fe6774643939e974";
 
-/* ================= WEATHER (FIXED) ================= */
+/* ================= SCHEDULE ================= */
 
-async function loadWeather() {
+const schedule={
+Monday:[null,"6-4 English","6-3 English","6-1 English","6-2 English",null],
+Tuesday:["Unavailable","Unavailable","Unavailable","Unavailable","Unavailable","Unavailable"],
+Wednesday:[null,"6-5 English","6-6 English","6-7 English","6-8 English",null],
+Thursday:["5-6 English","5-5 English","5-4 English","5-1 English","5-2 English",null],
+Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
+};
 
-    try {
+/* ================= DAY BLOCKS ================= */
 
-        const geoRes = await fetch(
-            `https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`
-        );
+const dayBlocks={
 
-        const geoData = await geoRes.json();
+Monday:[
+{type:"class",label:"1st",start:"09:00",end:"09:40"},
+{type:"break",start:"09:40",end:"09:50"},
+{type:"class",label:"2nd",start:"09:50",end:"10:30"},
+{type:"break",start:"10:30",end:"10:40"},
+{type:"class",label:"3rd",start:"10:40",end:"11:20"},
+{type:"lunch",start:"11:20",end:"12:20"},
+{type:"class",label:"4th",start:"12:20",end:"13:00"},
+{type:"break",start:"13:00",end:"13:10"},
+{type:"class",label:"5th",start:"13:10",end:"13:50"},
+{type:"break",start:"13:50",end:"14:00"},
+{type:"class",label:"6th",start:"14:00",end:"14:40"}
+],
 
-        const lat = geoData[0].lat;
-        const lon = geoData[0].lon;
+Wednesday:[
+{type:"class",label:"1st",start:"09:00",end:"09:40"},
+{type:"break",start:"09:40",end:"09:50"},
+{type:"class",label:"2nd",start:"09:50",end:"10:30"},
+{type:"break",start:"10:30",end:"10:40"},
+{type:"class",label:"3rd",start:"10:40",end:"11:20"},
+{type:"lunch",start:"11:20",end:"12:20"},
+{type:"class",label:"4th",start:"12:20",end:"13:00"},
+{type:"break",start:"13:00",end:"13:10"},
+{type:"class",label:"5th",start:"13:10",end:"13:50"},
+{type:"break",start:"13:50",end:"14:00"},
+{type:"class",label:"6th",start:"14:00",end:"14:40"}
+],
 
-        const res = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
-        );
+Thursday:[
+{type:"class",label:"1st",start:"09:00",end:"09:40"},
+{type:"break",start:"09:40",end:"09:50"},
+{type:"class",label:"2nd",start:"09:50",end:"10:30"},
+{type:"break",start:"10:30",end:"10:40"},
+{type:"class",label:"3rd",start:"10:40",end:"11:20"},
+{type:"class",label:"4th",start:"12:20",end:"13:00"},
+{type:"lunch",start:"13:00",end:"13:10"},
+{type:"class",label:"5th",start:"13:10",end:"13:50"},
+{type:"break",start:"13:50",end:"14:00"},
+{type:"class",label:"6th",start:"14:00",end:"14:40"}
+],
 
-        const data = await res.json();
+Friday:[
+{type:"class",label:"1st",start:"09:00",end:"09:40"},
+{type:"break",start:"09:40",end:"09:50"},
+{type:"class",label:"2nd",start:"09:50",end:"10:30"},
+{type:"break",start:"10:30",end:"10:40"},
+{type:"class",label:"3rd",start:"10:40",end:"11:20"},
+{type:"class",label:"4th",start:"12:20",end:"13:00"},
+{type:"lunch",start:"13:00",end:"13:10"},
+{type:"class",label:"5th",start:"13:10",end:"13:50"},
+{type:"break",start:"13:50",end:"14:00"},
+{type:"class",label:"6th",start:"14:00",end:"14:40"}
+]
 
-        document.getElementById("weather").textContent =
-            `${data.weather[0].main} / ${data.main.temp.toFixed(1)}°C`;
+};
 
-    } catch {
+/* ================= DATE ================= */
 
-        document.getElementById("weather").textContent =
-            "Unavailable";
-    }
-}
+const now=new Date();
+const today=now.toLocaleDateString("en-US",{weekday:"long"});
+document.getElementById("today").textContent=today;
 
-/* ================= AIR ================= */
+/* ================= BUILD SCHEDULE TABLE ================= */
 
-async function loadAir() {
+const table=document.getElementById("scheduleTable");
 
-    try {
+(schedule[today]||[]).forEach((cls,i)=>{
+let row=document.createElement("tr");
 
-        const geoRes = await fetch(
-            `https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`
-        );
+let p=document.createElement("td");
+p.textContent=(i+1)+"교시";
 
-        const geoData = await geoRes.json();
+let c=document.createElement("td");
+c.textContent=cls||"-";
 
-        const lat = geoData[0].lat;
-        const lon = geoData[0].lon;
+row.appendChild(p);
+row.appendChild(c);
 
-        const res = await fetch(
-            `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`
-        );
-
-        const data = await res.json();
-
-        const aqi = data.list[0].main.aqi;
-
-        const levels = [
-            "Good 😊",
-            "Fair 🙂",
-            "Moderate 😐",
-            "Poor 😷",
-            "Very Poor ☠️"
-        ];
-
-        document.getElementById("air").textContent =
-            levels[aqi-1];
-
-    } catch {
-
-        document.getElementById("air").textContent =
-            "Unavailable";
-    }
-}
+table.appendChild(row);
+});
 
 /* ================= CLOCK ================= */
 
-const canvas = document.getElementById("clock");
-const ctx = canvas.getContext("2d");
+const canvas=document.getElementById("clock");
+const ctx=canvas.getContext("2d");
+
+function toMin(t){
+let[h,m]=t.split(":");
+return h*60+ +m;
+}
 
 function drawClock(){
 
-const radius = canvas.width/2;
-ctx.clearRect(0,0,canvas.width,canvas.height);
+let now=new Date();
+let mins=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
 
-ctx.translate(radius,radius);
+ctx.clearRect(0,0,300,300);
 
-/* outer ring */
+/* face */
 
 ctx.beginPath();
-ctx.arc(0,0,radius-5,0,2*Math.PI);
-ctx.strokeStyle="white";
-ctx.lineWidth=4;
-ctx.stroke();
+ctx.arc(150,150,140,0,Math.PI*2);
+ctx.fillStyle="#1f3a5f";
+ctx.fill();
 
 /* ticks */
 
 for(let i=0;i<60;i++){
 
-ctx.rotate(Math.PI/30);
+let angle=i*Math.PI/30;
+
+let len=i%5==0?15:7;
+
+let x1=150+Math.cos(angle)*(120-len);
+let y1=150+Math.sin(angle)*(120-len);
+
+let x2=150+Math.cos(angle)*120;
+let y2=150+Math.sin(angle)*120;
 
 ctx.beginPath();
-
-ctx.moveTo(0,-radius+10);
-
-if(i%5==0){
-
-ctx.lineWidth=3;
-ctx.lineTo(0,-radius+25);
-
-}else{
-
-ctx.lineWidth=1;
-ctx.lineTo(0,-radius+18);
-
-}
-
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
 ctx.strokeStyle="white";
+ctx.lineWidth=i%5==0?3:1;
 ctx.stroke();
 
 }
 
-ctx.setTransform(1,0,0,1,0,0);
+/* active block */
+
+let blocks=dayBlocks[today]||[];
+
+let active=null;
+
+for(let b of blocks){
+
+let s=toMin(b.start);
+let e=toMin(b.end);
+
+if(mins>=s&&mins<=e){
+active=b;
+break;
+}
+
+}
+
+if(active){
+
+let color="red";
+
+if(active.type=="break")color="blue";
+if(active.type=="lunch")color="yellow";
+
+let total=toMin(active.end)-toMin(active.start);
+let remain=toMin(active.end)-mins;
+
+let percent=remain/total;
+
+let end=-Math.PI/2+percent*2*Math.PI;
+
+ctx.beginPath();
+ctx.arc(150,150,105,-Math.PI/2,end);
+ctx.strokeStyle=color;
+ctx.lineWidth=8;
+ctx.stroke();
+
+}
 
 }
 
 setInterval(drawClock,1000);
 
-/* ================= DATE ================= */
+/* ================= WEATHER ================= */
 
-function updateDate(){
+async function loadWeather(){
 
-const now=new Date();
+try{
 
-document.getElementById("date").textContent=
-now.toDateString();
+const geoRes=await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`);
+
+const geoData=await geoRes.json();
+
+const lat=geoData[0].lat;
+const lon=geoData[0].lon;
+
+const res=await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
+
+const data=await res.json();
+
+document.getElementById("weather").textContent=
+`🌤 Weather: ${data.weather[0].main} / ${data.main.temp.toFixed(1)}°C`;
+
+}catch{
+
+document.getElementById("weather").textContent="Weather Unavailable";
 
 }
 
-setInterval(updateDate,1000);
+}
 
-/* ================= INIT ================= */
+/* ================= AIR ================= */
+
+async function loadAir(){
+
+try{
+
+const geoRes=await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`);
+
+const geoData=await geoRes.json();
+
+const lat=geoData[0].lat;
+const lon=geoData[0].lon;
+
+const res=await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
+
+const data=await res.json();
+
+const aqi=data.list[0].main.aqi;
+
+const levels=["Good 😊","Fair 🙂","Moderate 😐","Poor 😷","Very Poor ☠️"];
+
+document.getElementById("air").textContent=
+`😷 Air Quality: ${levels[aqi-1]}`;
+
+}catch{
+
+document.getElementById("air").textContent="Air Quality Unavailable";
+
+}
+
+}
 
 loadWeather();
 loadAir();
-updateDate();
 
 </script>
 
