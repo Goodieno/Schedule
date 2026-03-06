@@ -315,7 +315,10 @@ const blocks=[
 {type:"class",label:"6교시",start:"14:00",end:"14:40"}
 ];
 
-blocks.forEach((b,i)=>{
+let classIndex=0;
+
+blocks.forEach((b)=>{
+
 if(b.type==="break") return;
 
 let row=document.createElement("tr");
@@ -326,7 +329,8 @@ p.textContent=b.label;
 let c=document.createElement("td");
 
 if(b.type==="class"){
-c.textContent=(schedule[today]||[])[i]||"-";
+c.textContent=(schedule[today]||[])[classIndex]||"-";
+classIndex++;
 }
 
 if(b.type==="lunch"){
@@ -336,8 +340,8 @@ c.innerHTML='<span class="lunchText">LUNCH</span>';
 row.appendChild(p);
 row.appendChild(c);
 table.appendChild(row);
-});
 
+});
 /* ================= CLOCK ================= */
 
 const canvas=document.getElementById("clock");
