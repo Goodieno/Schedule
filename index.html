@@ -218,15 +218,11 @@ let start=toMinutes(p.start);
 let end=toMinutes(p.end);
 
 if(nowMinutes>=start && nowMinutes<=end){
-
 current=i;
-
 }
 
 if(nowMinutes<start && next===null){
-
 next=i;
-
 }
 
 });
@@ -266,42 +262,11 @@ ctx.clearRect(0,0,260,260);
 
 
 // BLACK FACE
+
 ctx.beginPath();
 ctx.arc(130,130,120,0,Math.PI*2);
 ctx.fillStyle="black";
 ctx.fill();
-
-// COUNTDOWN RING (draw before ticks/hands)
-if(activeStart!==null){
-    let total=activeEnd-activeStart;
-    let remain=activeEnd-nowMin;
-    let percent=remain/total;
-    let endAngle=-Math.PI/2 + percent*(Math.PI*2);
-
-    ctx.beginPath();
-    // radius smaller than face so it's inside
-    ctx.arc(130,130,100,-Math.PI/2,endAngle);
-    ctx.strokeStyle=color;
-    ctx.lineWidth=12;
-    ctx.stroke();
-}
-
-// TICKS (draw after ring so they overlay)
-ctx.strokeStyle="white";
-ctx.lineWidth=2;
-for(let i=0;i<60;i++){
-    let angle=(i*Math.PI*2)/60;
-    let inner=(i%5===0)?90:100;
-    let outer=110;
-    let x1=130+inner*Math.sin(angle);
-    let y1=130-inner*Math.cos(angle);
-    let x2=130+outer*Math.sin(angle);
-    let y2=130-outer*Math.cos(angle);
-    ctx.beginPath();
-    ctx.moveTo(x1,y1);
-    ctx.lineTo(x2,y2);
-    ctx.stroke();
-}
 
 
 // FIND CLASS OR BREAK
@@ -355,49 +320,45 @@ let percent=remain/total;
 let endAngle=-Math.PI/2 + percent*(Math.PI*2);
 
 ctx.beginPath();
-ctx.arc(130,130,105,-Math.PI/2,endAngle);
+ctx.arc(130,130,100,-Math.PI/2,endAngle);
 
 ctx.strokeStyle=color;
-ctx.lineWidth=10;
+ctx.lineWidth=12;
 ctx.stroke();
 
 }
 
 
-// HANDS
-
-let hour=(h%12)+m/60;
-let hourAngle=hour*Math.PI/6;
-
-let minAngle=(m+s/60)*Math.PI/30;
+// CLOCK TICKS
 
 ctx.strokeStyle="white";
+ctx.lineWidth=2;
 
-ctx.lineWidth=4;
+for(let i=0;i<60;i++){
+
+let angle=(i*Math.PI*2)/60;
+
+let inner=(i%5===0)?90:100;
+let outer=110;
+
+let x1=130+inner*Math.sin(angle);
+let y1=130-inner*Math.cos(angle);
+
+let x2=130+outer*Math.sin(angle);
+let y2=130-outer*Math.cos(angle);
 
 ctx.beginPath();
-ctx.moveTo(130,130);
-ctx.lineTo(
-130+60*Math.sin(hourAngle),
-130-60*Math.cos(hourAngle)
-);
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
 ctx.stroke();
 
-ctx.lineWidth=3;
-
-ctx.beginPath();
-ctx.moveTo(130,130);
-ctx.lineTo(
-130+90*Math.sin(minAngle),
-130-90*Math.cos(minAngle)
-);
-ctx.stroke();
+}
 
 
 // DIGITAL TIME
 
 ctx.fillStyle="white";
-ctx.font="20px monospace";
+ctx.font="24px monospace";
 ctx.textAlign="center";
 
 let timeString=
