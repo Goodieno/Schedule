@@ -1,454 +1,379 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Tapdong TV Calendar</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Teacher Dashboard</title>
 
 <style>
 
-/* ================= BASIC ================= */
-
-body {
-    margin: 0;
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: #0f172a;
-    color: white;
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:linear-gradient(180deg,#eef2f7,#dfe6f0);
+display:flex;
+justify-content:center;
 }
 
-.container {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-    height: 100vh;
+.container{
+max-width:420px;
+width:100%;
+padding:15px;
 }
 
-/* ================= CALENDAR ================= */
-
-.calendar {
-    padding: 30px;
+.card{
+background:white;
+border-radius:16px;
+padding:16px;
+margin-bottom:16px;
+box-shadow:0 6px 18px rgba(0,0,0,0.08);
 }
 
-.header {
-    text-align: center;
-    font-size: 48px;
-    margin-bottom: 20px;
+h2{
+margin:0 0 10px 0;
+font-size:20px;
 }
 
-.weekdays {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    font-size: 34px;
-    font-weight: bold;
+#clockTitle{
+text-align:center;
+font-size:18px;
+margin-bottom:8px;
+font-weight:bold;
 }
 
-.weekdays div {
-    padding: 10px;
+canvas{
+display:block;
+margin:auto;
 }
 
-.sun { color: red; }
-.sat { color: #60a5fa; }
-
-.days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-auto-rows: 110px;
-    gap: 6px;
-    margin-top: 10px;
+#digital{
+text-align:center;
+font-size:28px;
+margin-top:10px;
+font-family:monospace;
 }
 
-.day {
-    background: #1e293b;
-    border-radius: 12px;
-    padding: 10px;
-    position: relative;
-    font-size: 34px;
+.weatherRow{
+display:flex;
+justify-content:space-between;
+font-size:18px;
 }
 
-.day.red {
-    color: red;
+.airBox{
+display:flex;
+justify-content:space-between;
+margin-top:6px;
 }
 
-.holiday {
-    font-size: 16px;
-    margin-top: 4px;
-    color: #f87171;
+table{
+width:100%;
+border-collapse:collapse;
 }
 
-/* ================= TODAY PULSE ================= */
-
-.today {
-    border: 4px solid red;
-    box-shadow: 0 0 20px red;
-    animation: pulse 1.5s infinite;
+td{
+padding:6px;
+border-bottom:1px solid #eee;
 }
 
-.today::after {
-    content: "";
-    position: absolute;
-    width: 26px;
-    height: 26px;
-    border: 4px solid red;
-    border-radius: 50%;
-    top: 6px;
-    right: 6px;
-}
-
-@keyframes pulse {
-    0% { box-shadow: 0 0 5px red; }
-    50% { box-shadow: 0 0 40px red; }
-    100% { box-shadow: 0 0 5px red; }
-}
-
-/* ================= SIDEBAR ================= */
-
-.sidebar {
-    background: #020617;
-    padding: 25px;
-    display: flex;
-    flex-direction: column;
-}
-
-.clock {
-    text-align: center;
-    font-size: 56px;
-    margin-bottom: 25px;
-}
-
-.info-box {
-    background: #1e293b;
-    padding: 18px;
-    border-radius: 15px;
-    margin-bottom: 15px;
-}
-
-.info-box h3 {
-    margin: 0 0 8px;
-    font-size: 22px;
-    text-align: center;
-}
-
-.info-box p {
-    margin: 5px 0;
-    font-size: 20px;
-    text-align: center;
-}
-
-/* Video */
-
-.video-box {
-    margin-top: auto;
-}
-
-.video-box iframe {
-    width: 100%;
-    height: 200px;
-    border-radius: 12px;
-    border: none;
-}
-
-.footer {
-    text-align:center;
-    font-size:14px;
-    opacity:0.6;
-    margin-top:8px;
+.small{
+font-size:14px;
+color:#555;
 }
 
 </style>
+
 </head>
 
 <body>
 
 <div class="container">
 
-<!-- ================= CALENDAR ================= -->
+<div class="card">
 
-<div class="calendar">
+<div id="clockTitle">Loading...</div>
 
-    <div class="header" id="monthYear"></div>
+<canvas id="clock" width="260" height="260"></canvas>
 
-    <div class="weekdays">
-        <div class="sun">일</div>
-        <div>월</div>
-        <div>화</div>
-        <div>수</div>
-        <div>목</div>
-        <div>금</div>
-        <div class="sat">토</div>
-    </div>
-
-    <div class="days" id="days"></div>
+<div id="digital"></div>
 
 </div>
 
-<!-- ================= SIDEBAR ================= -->
 
-<div class="sidebar">
+<div class="card">
 
-    <div>
+<h2>Weather</h2>
 
-        <div class="clock" id="clock"></div>
+<div class="weatherRow">
+<div id="temp">--°C</div>
+<div id="weather">--</div>
+</div>
 
-        <div class="info-box">
-            <h3>🌤 Weather</h3>
-            <p id="weather">Loading...</p>
-        </div>
+<div class="small" id="humidity"></div>
 
-        <div class="info-box">
-            <h3>😷 Air Quality</h3>
-            <p id="air">Loading...</p>
-        </div>
+</div>
 
-    </div>
 
-    <!-- Video -->
-     <div class="info-box video-box">
+<div class="card">
 
-            <h3>📺 안내 영상</h3>
+<h2>Air Quality</h2>
 
-     <iframe
-         src="https://www.youtube.com/embed/EZFLPCqa3tI?autoplay=1&mute=1&loop=1&playlist=EZFLPCqa3tI"
-         title="YouTube video player"
-         frameborder="0"
-         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-         referrerpolicy="strict-origin-when-cross-origin"
-         allowfullscreen>
-     </iframe>
+<div class="airBox">
+<div>PM2.5</div>
+<div id="pm25">--</div>
+</div>
 
-        </div>
+<div class="airBox">
+<div>PM10</div>
+<div id="pm10">--</div>
+</div>
 
-    </div>
+</div>
 
-    <div style="text-align:center;font-size:14px;opacity:0.6">
-        Dangjin • Korea
-    </div>
 
-    </div>
+<div class="card">
+
+<h2>Weekly Classes</h2>
+
+<table id="scheduleTable"></table>
 
 </div>
 
 </div>
+
 
 <script>
 
-/* ================= SETTINGS ================= */
+// ============================
+// SETTINGS
+// ============================
 
-const API_KEY = "fa9fe37b9be14839fe6774643939e974";
+const API_KEY="PUT_YOUR_OPENWEATHER_KEY_HERE"
 
-/* ================= DATE ================= */
+const lat=36.893
+const lon=126.629
 
-let now = new Date();
-let month = now.getMonth();
-let year = now.getFullYear();
-const today = new Date();
+// ============================
+// CLASS SCHEDULE
+// ============================
 
-/* ================= HOLIDAYS ================= */
-
-let holidays = {};
-
-/* ================= CALENDAR ================= */
-
-function renderCalendar() {
-
-    const daysEl = document.getElementById("days");
-    const header = document.getElementById("monthYear");
-
-    daysEl.innerHTML = "";
-
-    const firstDay = new Date(year, month, 1).getDay();
-    const lastDate = new Date(year, month + 1, 0).getDate();
-
-    header.textContent = `${year}년 ${month + 1}월`;
-
-    for (let i = 0; i < firstDay; i++) {
-        daysEl.appendChild(document.createElement("div"));
-    }
-
-    for (let day = 1; day <= lastDate; day++) {
-
-        const cell = document.createElement("div");
-        cell.classList.add("day");
-
-        const dateStr =
-            `${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
-
-        cell.innerHTML = `<div>${day}</div>`;
-
-        if ((firstDay + day - 1) % 7 === 0) {
-            cell.classList.add("red");
-        }
-
-        if (
-            day === today.getDate() &&
-            month === today.getMonth() &&
-            year === today.getFullYear()
-        ) {
-            cell.classList.add("today");
-        }
-
-        if (holidays[dateStr]) {
-
-            cell.classList.add("red");
-
-            holidays[dateStr].forEach(name => {
-                const h = document.createElement("div");
-                h.className = "holiday";
-                h.textContent = name;
-                cell.appendChild(h);
-            });
-        }
-
-        daysEl.appendChild(cell);
-    }
+const schedule={
+Monday:[null,"6-4","6-3","6-1","6-2",null],
+Tuesday:["Unavailable","Unavailable","Unavailable","Unavailable","Unavailable","Unavailable"],
+Wednesday:[null,"6-5","6-6","6-7","6-8",null],
+Thursday:["5-6","5-5","5-4","5-1","5-2",null],
+Friday:["5-3","5-7","5-8","5-9",null,null]
 }
 
-/* ================= HOLIDAYS ================= */
+// ============================
+// TIME BLOCKS
+// ============================
 
-async function loadHolidays() {
+const timeBlocks={
+Monday:[
+{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
+{type:"break",start:"09:40",end:"09:50"},
+{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
+{type:"break",start:"10:30",end:"10:40"},
+{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
+{type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
+{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
+{type:"break",start:"13:00",end:"13:10"},
+{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
+{type:"break",start:"13:50",end:"14:00"},
+{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
+],
 
-    try {
+Wednesday:[
+{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
+{type:"break",start:"09:40",end:"09:50"},
+{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
+{type:"break",start:"10:30",end:"10:40"},
+{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
+{type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
+{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
+{type:"break",start:"13:00",end:"13:10"},
+{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
+{type:"break",start:"13:50",end:"14:00"},
+{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
+],
 
-        const res = await fetch(
-            `https://date.nager.at/api/v3/PublicHolidays/${year}/KR`
-        );
+Thursday:[
+{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
+{type:"break",start:"09:40",end:"09:50"},
+{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
+{type:"break",start:"10:30",end:"10:40"},
+{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
+{type:"break",start:"11:20",end:"12:20"},
+{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
+{type:"lunch",label:"Lunch",start:"13:00",end:"13:10"},
+{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
+{type:"break",start:"13:50",end:"14:00"},
+{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
+],
 
-        const data = await res.json();
-
-        holidays = {};
-
-        data.forEach(h => {
-
-            if (!holidays[h.date]) {
-                holidays[h.date] = [];
-            }
-
-            holidays[h.date].push(h.localName);
-        });
-
-        renderCalendar();
-
-    } catch {
-        renderCalendar();
-    }
+Friday:[
+{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
+{type:"break",start:"09:40",end:"09:50"},
+{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
+{type:"break",start:"10:30",end:"10:40"},
+{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
+{type:"break",start:"11:20",end:"12:20"},
+{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
+{type:"lunch",label:"Lunch",start:"13:00",end:"13:10"},
+{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
+{type:"break",start:"13:50",end:"14:00"},
+{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
+]
 }
 
-/* ================= CLOCK ================= */
+// ============================
+// HELPER
+// ============================
 
-function updateClock() {
-
-    const now = new Date();
-
-    let h = now.getHours();
-    const m = String(now.getMinutes()).padStart(2,"0");
-    const s = String(now.getSeconds()).padStart(2,"0");
-
-    const ampm = h >= 12 ? "PM" : "AM";
-
-    h = h % 12;
-    h = h ? h : 12;
-
-    document.getElementById("clock").textContent =
-        `${h}:${m}:${s} ${ampm}`;
+function toMinutes(t){
+let [h,m]=t.split(":")
+return h*60+ +m
 }
 
-setInterval(updateClock, 1000);
-updateClock();
+// ============================
+// CLOCK
+// ============================
 
-/* ================= WEATHER (FIXED) ================= */
+const canvas=document.getElementById("clock")
+const ctx=canvas.getContext("2d")
 
-async function loadWeather() {
+function drawClock(){
 
-    try {
+let now=new Date()
 
-        const geoRes = await fetch(
-            `https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`
-        );
+let h=now.getHours()
+let m=now.getMinutes()
+let s=now.getSeconds()
 
-        const geoData = await geoRes.json();
+let nowMin=h*60+m+s/60
 
-        const lat = geoData[0].lat;
-        const lon = geoData[0].lon;
+ctx.clearRect(0,0,260,260)
 
-        const res = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
-        );
+ctx.beginPath()
+ctx.arc(130,130,120,0,Math.PI*2)
+ctx.fillStyle="black"
+ctx.fill()
 
-        const data = await res.json();
+let day=now.toLocaleDateString("en-US",{weekday:"long"})
 
-        document.getElementById("weather").textContent =
-            `${data.weather[0].main} / ${data.main.temp.toFixed(1)}°C`;
+let blocks=timeBlocks[day]
 
-    } catch {
+let active=null
 
-        document.getElementById("weather").textContent =
-            "Unavailable";
-    }
+if(blocks){
+
+for(let b of blocks){
+
+let start=toMinutes(b.start)
+let end=toMinutes(b.end)
+
+if(nowMin>=start && nowMin<=end){
+
+active=b
+break
+
 }
 
-/* ================= AIR ================= */
-
-async function loadAir() {
-
-    try {
-
-        const geoRes = await fetch(
-            `https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`
-        );
-
-        const geoData = await geoRes.json();
-
-        const lat = geoData[0].lat;
-        const lon = geoData[0].lon;
-
-        const res = await fetch(
-            `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`
-        );
-
-        const data = await res.json();
-
-        const aqi = data.list[0].main.aqi;
-
-        const levels = [
-            "Good 😊",
-            "Fair 🙂",
-            "Moderate 😐",
-            "Poor 😷",
-            "Very Poor ☠️"
-        ];
-
-        document.getElementById("air").textContent =
-            levels[aqi-1];
-
-    } catch {
-
-        document.getElementById("air").textContent =
-            "Unavailable";
-    }
 }
 
-/* ================= MIDNIGHT RELOAD ================= */
-
-function scheduleReload() {
-
-    const now = new Date();
-    const midnight = new Date();
-
-    midnight.setHours(24,0,0,0);
-
-    setTimeout(() => {
-        location.reload();
-    }, midnight - now);
 }
 
-/* ================= START ================= */
+if(active){
 
-loadHolidays();
-loadWeather();
-loadAir();
-scheduleReload();
+document.getElementById("clockTitle").innerText=active.label
 
-setInterval(loadWeather, 600000);
-setInterval(loadAir, 600000);
+let total=toMinutes(active.end)-toMinutes(active.start)
+let remain=toMinutes(active.end)-nowMin
+let percent=remain/total
+
+let endAngle=-Math.PI/2 + percent*(Math.PI*2)
+
+let color="blue"
+
+if(active.type==="class")color="red"
+if(active.type==="lunch")color="yellow"
+
+ctx.beginPath()
+ctx.arc(130,130,100,-Math.PI/2,endAngle)
+
+ctx.strokeStyle=color
+ctx.lineWidth=12
+ctx.stroke()
+
+}
+
+let timeString=
+String(h).padStart(2,"0")+":"+
+String(m).padStart(2,"0")+":"+
+String(s).padStart(2,"0")
+
+document.getElementById("digital").innerText=timeString
+
+}
+
+setInterval(drawClock,1000)
+
+
+// ============================
+// WEATHER
+// ============================
+
+fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`)
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("temp").innerText=Math.round(data.main.temp)+"°C"
+
+document.getElementById("weather").innerText=data.weather[0].main
+
+document.getElementById("humidity").innerText="Humidity "+data.main.humidity+"%"
+
+})
+
+
+// ============================
+// AIR QUALITY
+// ============================
+
+fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`)
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("pm25").innerText=data.list[0].components.pm2_5
+
+document.getElementById("pm10").innerText=data.list[0].components.pm10
+
+})
+
+
+// ============================
+// WEEK TABLE
+// ============================
+
+let table=document.getElementById("scheduleTable")
+
+for(let day in schedule){
+
+let row=document.createElement("tr")
+
+let c1=document.createElement("td")
+c1.innerText=day
+
+let c2=document.createElement("td")
+c2.innerText=schedule[day].join(" / ")
+
+row.appendChild(c1)
+row.appendChild(c2)
+
+table.appendChild(row)
+
+}
 
 </script>
 
