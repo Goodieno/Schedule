@@ -176,12 +176,12 @@ font-weight:bold;
 
 <table id="scheduleTable">
 <tr>
-<th>Period</th>
-<th>Class</th>
+<th>Time</th>
+<th>Activity</th>
 </tr>
 </table>
 
-<!-- WEEK POPUP -->
+<!-- WEEK POPUP (unchanged) -->
 
 <div id="weekPopup">
 <div id="weekBox">
@@ -283,28 +283,51 @@ Thursday:["5-6 English","5-5 English","5-4 English","5-1 English","5-2 English",
 Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
 };
 
+/* ================= BLOCK SYSTEM ================= */
+
+const blocks=[
+{type:"class",label:"1교시",start:"09:00",end:"09:40",period:0},
+{type:"break",label:"Break",start:"09:40",end:"09:50"},
+{type:"class",label:"2교시",start:"09:50",end:"10:30",period:1},
+{type:"break",label:"Break",start:"10:30",end:"10:40"},
+{type:"class",label:"3교시",start:"10:40",end:"11:20",period:2},
+{type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
+{type:"class",label:"4교시",start:"12:20",end:"13:00",period:3},
+{type:"break",label:"Break",start:"13:00",end:"13:10"},
+{type:"class",label:"5교시",start:"13:10",end:"13:50",period:4},
+{type:"break",label:"Break",start:"13:50",end:"14:00"},
+{type:"class",label:"6교시",start:"14:00",end:"14:40",period:5}
+];
+
 /* ================= DATE ================= */
 
 const now=new Date();
 const today=now.toLocaleDateString("en-US",{weekday:"long"});
 document.getElementById("today").textContent=today;
 
-/* ================= BUILD TABLE ================= */
+/* ================= BUILD DAILY TABLE ================= */
 
 const table=document.getElementById("scheduleTable");
 
-(schedule[today]||[]).forEach((cls,i)=>{
+blocks.forEach((b,i)=>{
 
 let row=document.createElement("tr");
+row.dataset.index=i;
 
-let p=document.createElement("td");
-p.textContent=(i+1)+"교시";
+let time=document.createElement("td");
+time.textContent=`${b.start} - ${b.end}`;
 
-let c=document.createElement("td");
-c.textContent=cls||"-";
+let activity=document.createElement("td");
 
-row.appendChild(p);
-row.appendChild(c);
+if(b.type==="class"){
+activity.textContent=schedule[today]?.[b.period] || "-";
+}
+else{
+activity.textContent=b.label;
+}
+
+row.appendChild(time);
+row.appendChild(activity);
 table.appendChild(row);
 
 });
@@ -319,20 +342,6 @@ let[h,m]=t.split(":");
 return h*60+ +m;
 }
 
-const blocks=[
-{type:"class",label:"1교시",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-{type:"class",label:"2교시",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-{type:"class",label:"3교시",start:"10:40",end:"11:20"},
-{type:"lunch",label:"점심시간",start:"11:20",end:"12:20"},
-{type:"class",label:"4교시",start:"12:20",end:"13:00"},
-{type:"break",start:"13:00",end:"13:10"},
-{type:"class",label:"5교시",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-{type:"class",label:"6교시",start:"14:00",end:"14:40"}
-];
-
 function drawClock(){
 
 let now=new Date();
@@ -340,49 +349,31 @@ let mins=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
 
 ctx.clearRect(0,0,300,300);
 
-/* face */
-
 ctx.beginPath();
 ctx.arc(150,150,140,0,Math.PI*2);
 ctx.fillStyle="#1f3a5f";
 ctx.fill();
 
-/* ticks */
-
-for(let i=0;i<60;i++){
-
-let angle=i*Math.PI/30;
-let len=i%5==0?15:7;
-
-let x1=150+Math.cos(angle)*(120-len);
-let y1=150+Math.sin(angle)*(120-len);
-
-let x2=150+Math.cos(angle)*120;
-let y2=150+Math.sin(angle)*120;
-
-ctx.beginPath();
-ctx.moveTo(x1,y1);
-ctx.lineTo(x2,y2);
-ctx.strokeStyle="white";
-ctx.lineWidth=i%5==0?3:1;
-ctx.stroke();
-
-}
-
-/* active block */
-
 let active=null;
 
-for(let b of blocks){
-
+blocks.forEach((b,i)=>{
 let s=toMin(b.start);
 let e=toMin(b.end);
 
 if(mins>=s&&mins<=e){
-active=b;
-break;
+active={block:b,index:i};
 }
+});
 
+/* highlight table */
+
+document.querySelectorAll("#scheduleTable tr").forEach(r=>{
+r.classList.remove("activeRow");
+});
+
+if(active){
+let row=document.querySelector(`#scheduleTable tr[data-index='${active.index}']`);
+if(row)row.classList.add("activeRow");
 }
 
 let label="Free Time";
@@ -390,19 +381,19 @@ let color="grey";
 
 if(active){
 
-label=active.label||active.type;
+let b=active.block;
 
-if(active.type=="class")color="red";
-if(active.type=="break")color="blue";
-if(active.type=="lunch")color="yellow";
+label=b.label;
 
-let total=toMin(active.end)-toMin(active.start);
-let remain=toMin(active.end)-mins;
+if(b.type=="class")color="red";
+if(b.type=="break")color="blue";
+if(b.type=="lunch")color="yellow";
+
+let total=toMin(b.end)-toMin(b.start);
+let remain=toMin(b.end)-mins;
 
 let percent=remain/total;
 let end=-Math.PI/2+percent*2*Math.PI;
-
-/* smooth glow pulse */
 
 let pulse=(Math.sin(Date.now()/400)+1)/2;
 let glow=5+pulse*35;
@@ -438,15 +429,12 @@ ctx.textBaseline="middle";
 
 ctx.fillText(`${h}:${m}:${s} ${ampm}`,150,150);
 
-/* label */
-
-let labelBox=document.getElementById("periodLabel");
-labelBox.textContent=label;
-labelBox.style.color=color;
+document.getElementById("periodLabel").textContent=label;
+document.getElementById("periodLabel").style.color=color;
 
 }
 
-/* 60fps animation */
+/* smooth animation */
 
 function animate(){
 drawClock();
