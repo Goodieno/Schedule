@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Teacher Dashboard</title>
 
 <style>
 
 body{
-font-family:Arial, Helvetica, sans-serif;
+font-family:Arial;
 background:#0f172a;
 color:#e2e8f0;
 margin:0;
@@ -37,8 +36,6 @@ margin-top:0;
 font-size:20px;
 }
 
-/* CLOCK */
-
 .clockWrap{
 display:flex;
 justify-content:center;
@@ -62,15 +59,11 @@ font-size:16px;
 opacity:.8;
 }
 
-/* WEATHER */
-
 .weatherRow{
 display:flex;
 justify-content:space-between;
 font-size:18px;
 }
-
-/* SCHEDULE */
 
 table{
 width:100%;
@@ -92,11 +85,9 @@ border-radius:6px;
 }
 
 @keyframes pulse{
-
 0%{box-shadow:0 0 5px #3b82f6;}
 50%{box-shadow:0 0 18px #3b82f6;}
 100%{box-shadow:0 0 5px #3b82f6;}
-
 }
 
 .weekSchedule{
@@ -110,9 +101,7 @@ display:none;
 
 <div class="container">
 
-<!-- CLOCK -->
-
-<div class="card clockWrap">
+<div class="card clockWrap" aria-label="Class countdown clock">
 
 <canvas id="clock" width="260" height="260"></canvas>
 
@@ -122,8 +111,6 @@ display:none;
 
 </div>
 
-
-<!-- WEATHER -->
 
 <div class="card">
 
@@ -141,18 +128,18 @@ Air Quality: <span id="air">--</span>
 </div>
 
 
-<!-- TODAY SCHEDULE -->
-
 <div class="card" onclick="toggleWeek()">
 
 <h2 id="todayTitle">Today's Classes</h2>
 
-<table id="todaySchedule"></table>
+<table id="todaySchedule" aria-label="Today's class schedule"></table>
+
+<div id="noClasses" style="display:none;text-align:center;padding:10px">
+No Classes Today
+</div>
 
 </div>
 
-
-<!-- WEEK SCHEDULE -->
 
 <div class="card weekSchedule" id="weekCard">
 
@@ -169,50 +156,11 @@ Air Quality: <span id="air">--</span>
 <th>금</th>
 </tr>
 
-<tr>
-<td>1</td>
-<td>-</td>
-<td>-</td>
-<td>-</td>
-<td>5-6</td>
-<td>5-3</td>
-</tr>
-
-<tr>
-<td>2</td>
-<td>6-4</td>
-<td>-</td>
-<td>6-5</td>
-<td>5-5</td>
-<td>5-7</td>
-</tr>
-
-<tr>
-<td>3</td>
-<td>6-3</td>
-<td>-</td>
-<td>6-6</td>
-<td>5-4</td>
-<td>5-8</td>
-</tr>
-
-<tr>
-<td>4</td>
-<td>6-1</td>
-<td>-</td>
-<td>6-7</td>
-<td>5-1</td>
-<td>5-9</td>
-</tr>
-
-<tr>
-<td>5</td>
-<td>6-2</td>
-<td>-</td>
-<td>6-8</td>
-<td>5-2</td>
-<td>-</td>
-</tr>
+<tr><td>1</td><td>-</td><td>-</td><td>-</td><td>5-6</td><td>5-3</td></tr>
+<tr><td>2</td><td>6-4</td><td>-</td><td>6-5</td><td>5-5</td><td>5-7</td></tr>
+<tr><td>3</td><td>6-3</td><td>-</td><td>6-6</td><td>5-4</td><td>5-8</td></tr>
+<tr><td>4</td><td>6-1</td><td>-</td><td>6-7</td><td>5-1</td><td>5-9</td></tr>
+<tr><td>5</td><td>6-2</td><td>-</td><td>6-8</td><td>5-2</td><td>-</td></tr>
 
 </table>
 
@@ -223,19 +171,22 @@ Air Quality: <span id="air">--</span>
 
 <script>
 
-/* SCHEDULE */
+/* WEEKLY CLASS LIST */
 
 const schedule={
 Monday:[null,"6-4 English","6-3 English","6-1 English","6-2 English",null],
-Tuesday:["Unavailable","Unavailable","Unavailable","Unavailable","Unavailable","Unavailable"],
+Tuesday:null,
 Wednesday:[null,"6-5 English","6-6 English","6-7 English","6-8 English",null],
 Thursday:["5-6 English","5-5 English","5-4 English","5-1 English","5-2 English",null],
 Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
 }
 
-/* TIME BLOCKS */
 
-const blocks=[
+/* DAY-SPECIFIC TIME BLOCKS */
+
+const dayBlocks={
+
+Monday:[
 
 {type:"class",label:"1st Period",start:"09:00",end:"09:40"},
 {type:"break",start:"09:40",end:"09:50"},
@@ -254,44 +205,153 @@ const blocks=[
 
 {type:"class",label:"6th Period",start:"14:00",end:"14:40"}
 
+],
+
+Wednesday:[
+
+{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
+{type:"break",start:"09:40",end:"09:50"},
+
+{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
+{type:"break",start:"10:30",end:"10:40"},
+
+{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
+{type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
+
+{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
+{type:"break",start:"13:00",end:"13:10"},
+
+{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
+{type:"break",start:"13:50",end:"14:00"},
+
+{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
+
+],
+
+Thursday:[
+
+{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
+{type:"break",start:"09:40",end:"09:50"},
+
+{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
+{type:"break",start:"10:30",end:"10:40"},
+
+{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
+{type:"break",start:"11:20",end:"12:20"},
+
+{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
+{type:"lunch",label:"Lunch",start:"13:00",end:"13:10"},
+
+{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
+{type:"break",start:"13:50",end:"14:00"},
+
+{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
+
+],
+
+Friday:[
+
+{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
+{type:"break",start:"09:40",end:"09:50"},
+
+{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
+{type:"break",start:"10:30",end:"10:40"},
+
+{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
+{type:"break",start:"11:20",end:"12:20"},
+
+{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
+{type:"lunch",label:"Lunch",start:"13:00",end:"13:10"},
+
+{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
+{type:"break",start:"13:50",end:"14:00"},
+
+{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
+
 ]
 
-function toMin(t){
+}
 
+function toMin(t){
 let [h,m]=t.split(":")
 return parseInt(h)*60+parseInt(m)
-
 }
+
 
 /* CLOCK */
 
 const canvas=document.getElementById("clock")
 const ctx=canvas.getContext("2d")
 
+let today=new Date().toLocaleDateString("en-US",{weekday:"long"})
+
+let blocks=dayBlocks[today]||[]
+
 function drawClock(){
 
 let now=new Date()
 
-let nowMin=now.getHours()*60+now.getMinutes()+now.getSeconds()/60
+let h=now.getHours()
+let m=now.getMinutes()
+let s=now.getSeconds()
+
+let nowMin=h*60+m+s/60
 
 ctx.clearRect(0,0,260,260)
-
-/* face */
 
 ctx.beginPath()
 ctx.arc(130,130,120,0,Math.PI*2)
 ctx.fillStyle="black"
 ctx.fill()
 
+/* ticks */
+
+ctx.strokeStyle="white"
+for(let i=0;i<60;i++){
+
+let angle=(i*Math.PI*2)/60
+let inner=(i%5===0)?90:100
+let outer=110
+
+let x1=130+inner*Math.sin(angle)
+let y1=130-inner*Math.cos(angle)
+
+let x2=130+outer*Math.sin(angle)
+let y2=130-outer*Math.cos(angle)
+
+ctx.beginPath()
+ctx.moveTo(x1,y1)
+ctx.lineTo(x2,y2)
+ctx.stroke()
+
+}
+
+/* hands */
+
+let hour=(h%12)+m/60
+let hourAngle=hour*Math.PI/6
+let minAngle=(m+s/60)*Math.PI/30
+
+ctx.lineWidth=4
+ctx.beginPath()
+ctx.moveTo(130,130)
+ctx.lineTo(130+60*Math.sin(hourAngle),130-60*Math.cos(hourAngle))
+ctx.stroke()
+
+ctx.lineWidth=3
+ctx.beginPath()
+ctx.moveTo(130,130)
+ctx.lineTo(130+90*Math.sin(minAngle),130-90*Math.cos(minAngle))
+ctx.stroke()
+
+
 let active=null
 
 for(let b of blocks){
 
 if(nowMin>=toMin(b.start)&&nowMin<=toMin(b.end)){
-
 active=b
 break
-
 }
 
 }
@@ -329,13 +389,13 @@ document.getElementById("clockLabel").innerText=active.label
 
 }
 
-/* TODAY TABLE */
-
-let today=new Date().toLocaleDateString("en-US",{weekday:"long"})
+/* BUILD TODAY TABLE */
 
 let todayList=schedule[today]
 
 let table=document.getElementById("todaySchedule")
+
+if(todayList){
 
 todayList.forEach((c,i)=>{
 
@@ -354,21 +414,23 @@ table.appendChild(row)
 
 })
 
+}else{
+
+document.getElementById("noClasses").style.display="block"
+
+}
+
+
 /* WEATHER */
 
-const API="YOUR_OPENWEATHER_API_KEY"
+const API="fa9fe37b9be14839fe6774643939e974"
 
 fetch(`https://api.openweathermap.org/data/2.5/weather?q=Dangjin&units=metric&appid=${API}`)
 .then(r=>r.json())
 .then(d=>{
-
 document.getElementById("temp").innerText=Math.round(d.main.temp)+"°C"
-
 document.getElementById("weather").innerText=d.weather[0].main
-
 })
-
-/* AIR */
 
 fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=36.89&lon=126.63&appid=${API}`)
 .then(r=>r.json())
@@ -387,7 +449,6 @@ document.getElementById("air").innerText=text
 
 })
 
-/* WEEK TOGGLE */
 
 function toggleWeek(){
 
