@@ -227,27 +227,6 @@ let now=new Date();
 let mins=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
 
 ctx.clearRect(0,0,300,300);
-/* ================= CENTER DIGITAL CLOCK ================= */
-
-let h = now.getHours();
-let m = now.getMinutes();
-let s = now.getSeconds();
-
-let ampm = h >= 12 ? "PM" : "AM";
-h = h % 12;
-if (h === 0) h = 12;
-
-m = m.toString().padStart(2,"0");
-s = s.toString().padStart(2,"0");
-
-let timeText = `${h}:${m}:${s} ${ampm}`;
-
-ctx.fillStyle = "white";
-ctx.font = "28px Arial";
-ctx.textAlign = "center";
-ctx.textBaseline = "middle";
-
-ctx.fillText(timeText,150,150);
 
 /* face */
 
@@ -279,6 +258,14 @@ ctx.stroke();
 
 }
 
+/* faint track ring */
+
+ctx.beginPath();
+ctx.arc(150,150,105,0,Math.PI*2);
+ctx.strokeStyle="rgba(255,255,255,0.15)";
+ctx.lineWidth=4;
+ctx.stroke();
+
 /* active block */
 
 let blocks=dayBlocks[today]||[];
@@ -297,44 +284,63 @@ break;
 
 }
 
+let color="grey";
+
 if(active){
 
-let color="red";
+if(active.type=="class") color="red";
+if(active.type=="break") color="deepskyblue";
+if(active.type=="lunch") color="yellow";
 
-if(active.type=="break")color="blue";
-if(active.type=="lunch")color="yellow";
+}
 
-let total=toMin(active.end)-toMin(active.start);
-let remain=toMin(active.end)-mins;
+let start=active?toMin(active.start):mins;
+let endTime=active?toMin(active.end):mins+1;
+
+let total=endTime-start;
+let remain=endTime-mins;
 
 let percent=remain/total;
 
-let end=-Math.PI/2+percent*2*Math.PI;
+let endAngle=-Math.PI/2+percent*2*Math.PI;
+
+/* countdown ring */
 
 ctx.beginPath();
-ctx.arc(150,150,105,-Math.PI/2,end);
-/* pulse effect only for class */
+ctx.arc(150,150,105,-Math.PI/2,endAngle);
 
-if(active.type=="class"){
+/* pulse effect */
 
-let pulse = 6 + Math.sin(Date.now()/200)*2;
+let pulse = 4 + Math.sin(Date.now()/180)*1.5;
 
 ctx.lineWidth = pulse;
-
-}else{
-
-ctx.lineWidth = 6;
-
-}
 
 ctx.strokeStyle=color;
 ctx.stroke();
 
-}
+/* digital clock center */
+
+let h = now.getHours();
+let m = now.getMinutes();
+let s = now.getSeconds();
+
+let ampm = h >= 12 ? "PM" : "AM";
+h = h % 12;
+if (h === 0) h = 12;
+
+m = m.toString().padStart(2,"0");
+s = s.toString().padStart(2,"0");
+
+let timeText = `${h}:${m}:${s} ${ampm}`;
+
+ctx.fillStyle = "white";
+ctx.font = "28px Arial";
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+
+ctx.fillText(timeText,150,150);
 
 }
-
-setInterval(drawClock,1000);
 
 /* ================= WEATHER ================= */
 
