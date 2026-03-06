@@ -1,267 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Teacher Timer</title>
-
-<style>
-
-/* ================= THEME ================= */
-
-body{
-background:#0b1626;
-font-family:Arial;
-color:white;
-text-align:center;
-margin:0;
-padding:20px;
-}
-
-h2{
-margin:10px 0;
-cursor:pointer;
-}
-
-/* ================= CLOCK ================= */
-
-#clockBox{
-margin:auto;
-width:320px;
-}
-
-canvas{
-background:#1f3a5f;
-border-radius:50%;
-box-shadow:0 0 20px rgba(0,140,255,.4);
-}
-
-/* ================= PERIOD LABEL ================= */
-
-#periodLabel{
-font-size:22px;
-font-weight:bold;
-margin-top:10px;
-}
-
-/* ================= INFO ================= */
-
-#info{
-margin-top:20px;
-font-size:18px;
-}
-
-#weather{
-font-weight:bold;
-margin-top:5px;
-}
-
-#air{
-font-weight:bold;
-margin-top:5px;
-}
-
-/* ================= SCHEDULE ================= */
-
-table{
-margin:auto;
-margin-top:20px;
-border-collapse:collapse;
-width:95%;
-max-width:400px;
-}
-
-th,td{
-padding:10px;
-border-bottom:1px solid #333;
-}
-
-th{
-color:#9cc9ff;
-}
-
-.activeRowClass{
-background:rgba(255,0,0,.25);
-}
-
-.activeRowLunch{
-background:rgba(255,255,0,.35);
-}
-
-.lunchText{
-color:red;
-font-weight:bold;
-}
-
-/* ================= WEEK POPUP ================= */
-
-#weekPopup{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.7);
-display:none;
-align-items:center;
-justify-content:center;
-z-index:1000;
-}
-
-#weekBox{
-background:#efe6dc;
-padding:20px;
-border-radius:12px;
-width:95%;
-max-width:600px;
-color:black;
-}
-
-#weekBox h3{
-margin-top:0;
-text-align:left;
-}
-
-#weekTable{
-width:100%;
-border-collapse:collapse;
-text-align:center;
-}
-
-#weekTable th{
-background:#e0cfc0;
-padding:8px;
-}
-
-#weekTable td{
-padding:10px;
-border-top:1px solid #d0c2b5;
-}
-
-.lunchRed{
-color:red;
-font-size:12px;
-font-weight:bold;
-}
-
-.lunchPurple{
-color:purple;
-font-size:12px;
-font-weight:bold;
-}
-
-</style>
-</head>
-
-<body>
-
-<h2 id="today"></h2>
-
-<div id="clockBox">
-<canvas id="clock" width="300" height="300"></canvas>
-</div>
-
-<div id="periodLabel"></div>
-
-<div id="info">
-<div id="weather">🌤 Weather</div>
-<div id="air">😷 Air Quality</div>
-</div>
-
-<table id="scheduleTable">
-<tr>
-<th>Period</th>
-<th>Class</th>
-</tr>
-</table>
-
-<!-- WEEK POPUP -->
-
-<div id="weekPopup">
-<div id="weekBox">
-
-<h3>벤자민 (영어)</h3>
-
-<table id="weekTable">
-
-<tr>
-<th>교시</th>
-<th>월요일</th>
-<th>화요일</th>
-<th>수요일</th>
-<th>목요일</th>
-<th>금요일</th>
-</tr>
-
-<tr>
-<td>1교시</td>
-<td></td>
-<td></td>
-<td></td>
-<td>5-6 영어</td>
-<td>5-3 영어</td>
-</tr>
-
-<tr>
-<td>2교시</td>
-<td>6-4 영어</td>
-<td></td>
-<td>6-5 영어</td>
-<td>5-5 영어</td>
-<td>5-7 영어</td>
-</tr>
-
-<tr>
-<td>3교시</td>
-<td>6-3 영어</td>
-<td></td>
-<td>6-6 영어</td>
-<td>5-4 영어</td>
-<td>5-8 영어</td>
-</tr>
-
-<tr>
-<td>4교시</td>
-<td>
-<div class="lunchRed">LUNCH 11:20-12:20</div>
-6-1 영어
-</td>
-<td></td>
-<td>
-<div class="lunchRed">LUNCH 11:20-12:20</div>
-6-7 영어
-</td>
-<td>5-1 영어</td>
-<td>
-5-9 영어
-<div class="lunchPurple">LUNCH 12:10-13:10</div>
-</td>
-</tr>
-
-<tr>
-<td>5교시</td>
-<td>6-2 영어</td>
-<td></td>
-<td>6-8 영어</td>
-<td>5-2 영어</td>
-<td></td>
-</tr>
-
-<tr>
-<td>6교시</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-
-</table>
-
-</div>
-</div>
-
 <script>
 
 /* ================= API ================= */
@@ -271,11 +7,11 @@ const API_KEY="fa9fe37b9be14839fe6774643939e974";
 /* ================= SCHEDULE ================= */
 
 const schedule={
-Monday:[null,"6-4 English","6-3 English","6-1 English","6-2 English",null],
-Tuesday:["Unavailable","Unavailable","Unavailable","Unavailable","Unavailable","Unavailable"],
-Wednesday:[null,"6-5 English","6-6 English","6-7 English","6-8 English",null],
-Thursday:["5-6 English","5-5 English","5-4 English","5-1 English","5-2 English",null],
-Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
+  Monday:[null,"6-4 English","6-3 English","6-1 English","6-2 English",null],
+  Tuesday:["Unavailable","Unavailable","Unavailable","Unavailable","Unavailable","Unavailable"],
+  Wednesday:[null,"6-5 English","6-6 English","6-7 English","6-8 English",null],
+  Thursday:["5-6 English","5-5 English","5-4 English","5-1 English","5-2 English",null],
+  Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
 };
 
 /* ================= DATE ================= */
@@ -289,41 +25,44 @@ document.getElementById("today").textContent=today;
 const table=document.getElementById("scheduleTable");
 
 const blocks=[
-{type:"class",label:"1교시",start:"09:00",end:"09:40"},
-{type:"break",label:"쉬는시간",start:"09:40",end:"09:50"},
-{type:"class",label:"2교시",start:"09:50",end:"10:30"},
-{type:"break",label:"쉬는시간",start:"10:30",end:"10:40"},
-{type:"class",label:"3교시",start:"10:40",end:"11:20"},
-{type:"lunch",label:"점심시간",start:"11:20",end:"12:20"},
-{type:"class",label:"4교시",start:"12:20",end:"13:00"},
-{type:"break",label:"쉬는시간",start:"13:00",end:"13:10"},
-{type:"class",label:"5교시",start:"13:10",end:"13:50"},
-{type:"break",label:"쉬는시간",start:"13:50",end:"14:00"},
-{type:"class",label:"6교시",start:"14:00",end:"14:40"}
+  {type:"class",label:"1교시",start:"09:00",end:"09:40"},
+  {type:"break",label:"쉬는시간",start:"09:40",end:"09:50"},
+  {type:"class",label:"2교시",start:"09:50",end:"10:30"},
+  {type:"break",label:"쉬는시간",start:"10:30",end:"10:40"},
+  {type:"class",label:"3교시",start:"10:40",end:"11:20"},
+  {type:"lunch",label:"점심시간",start:"11:20",end:"12:20"},
+  {type:"class",label:"4교시",start:"12:20",end:"13:00"},
+  {type:"break",label:"쉬는시간",start:"13:00",end:"13:10"},
+  {type:"class",label:"5교시",start:"13:10",end:"13:50"},
+  {type:"break",label:"쉬는시간",start:"13:50",end:"14:00"},
+  {type:"class",label:"6교시",start:"14:00",end:"14:40"}
 ];
 
-blocks.forEach((b,i)=>{
+let classIdx = 0;
 
-if(b.type==="break") return;
+blocks.forEach((b) => {
 
-let row=document.createElement("tr");
+  if (b.type === "break") return;
 
-let p=document.createElement("td");
-p.textContent=b.label;
+  let row = document.createElement("tr");
 
-let c=document.createElement("td");
+  let p = document.createElement("td");
+  p.textContent = b.label;
 
-if(b.type==="class"){
-c.textContent=(schedule[today]||[])[i]||"-";
-}
+  let c = document.createElement("td");
 
-if(b.type==="lunch"){
-c.innerHTML='<span class="lunchText">LUNCH</span>';
-}
+  if (b.type === "class") {
+    c.textContent = (schedule[today] || [])[classIdx] || "-";
+    classIdx++;
+  }
 
-row.appendChild(p);
-row.appendChild(c);
-table.appendChild(row);
+  if (b.type === "lunch") {
+    c.innerHTML = '<span class="lunchText">LUNCH</span>';
+  }
+
+  row.appendChild(p);
+  row.appendChild(c);
+  table.appendChild(row);
 
 });
 
@@ -331,141 +70,144 @@ table.appendChild(row);
 
 const canvas=document.getElementById("clock");
 const ctx=canvas.getContext("2d");
+const weekPopup = document.getElementById("weekPopup");
 
 function toMin(t){
-let[h,m]=t.split(":");
-return h*60+ +m;
+  const parts = t.split(":");
+  const h = parseInt(parts[0], 10);
+  const m = parseInt(parts[1], 10);
+  return h * 60 + m;
 }
 
 function highlightSchedule(label,type){
 
-document.querySelectorAll("#scheduleTable tr").forEach(r=>{
-r.classList.remove("activeRowClass","activeRowLunch");
-});
+  document.querySelectorAll("#scheduleTable tr").forEach(r=>{
+    r.classList.remove("activeRowClass","activeRowLunch");
+  });
 
-document.querySelectorAll("#scheduleTable tr").forEach(r=>{
+  document.querySelectorAll("#scheduleTable tr").forEach(r=>{
 
-let td=r.querySelector("td");
+    let td=r.querySelector("td");
 
-if(td && td.textContent===label){
+    if(td && td.textContent===label){
 
-if(type==="class") r.classList.add("activeRowClass");
-if(type==="lunch") r.classList.add("activeRowLunch");
+      if(type==="class") r.classList.add("activeRowClass");
+      if(type==="lunch") r.classList.add("activeRowLunch");
 
-}
+    }
 
-});
+  });
 
 }
 
 function drawClock(){
 
-let now=new Date();
-let mins=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+  let now=new Date();
+  let mins=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
 
-ctx.clearRect(0,0,300,300);
+  ctx.clearRect(0,0,300,300);
 
-/* clock face */
+  /* clock face */
 
-ctx.beginPath();
-ctx.arc(150,150,140,0,Math.PI*2);
-ctx.fillStyle="#1f3a5f";
-ctx.fill();
+  ctx.beginPath();
+  ctx.arc(150,150,140,0,Math.PI*2);
+  ctx.fillStyle="#1f3a5f";
+  ctx.fill();
 
-/* ticks */
+  /* ticks */
 
-for(let i=0;i<60;i++){
+  for(let i=0;i<60;i++){
 
-let angle=i*Math.PI/30;
-let len=i%5==0?15:7;
+    let angle=i*Math.PI/30;
+    let len=i%5==0?15:7;
 
-let x1=150+Math.cos(angle)*(120-len);
-let y1=150+Math.sin(angle)*(120-len);
+    let x1=150+Math.cos(angle)*(120-len);
+    let y1=150+Math.sin(angle)*(120-len);
 
-let x2=150+Math.cos(angle)*120;
-let y2=150+Math.sin(angle)*120;
+    let x2=150+Math.cos(angle)*120;
+    let y2=150+Math.sin(angle)*120;
 
-ctx.beginPath();
-ctx.moveTo(x1,y1);
-ctx.lineTo(x2,y2);
-ctx.strokeStyle="white";
-ctx.lineWidth=i%5==0?3:1;
-ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.strokeStyle="white";
+    ctx.lineWidth=i%5==0?3:1;
+    ctx.stroke();
 
-}
+  }
 
-/* active block */
+  /* active block */
 
-let active=null;
+  let active=null;
 
-for(let b of blocks){
+  for(let b of blocks){
 
-let s=toMin(b.start);
-let e=toMin(b.end);
+    let s=toMin(b.start);
+    let e=toMin(b.end);
 
-if(mins>=s && mins<=e){
-active=b;
-break;
-}
+    if(mins>=s && mins<=e){
+      active=b;
+      break;
+    }
 
-}
+  }
 
-let label="Free Time";
-let color="grey";
+  let label="Free Time";
+  let color="grey";
 
-if(active){
+  if(active){
 
-label=active.label;
+    label=active.label;
 
-if(active.type==="class") color="red";
-if(active.type==="break") color="blue";
-if(active.type==="lunch") color="yellow";
+    if(active.type==="class") color="red";
+    if(active.type==="break") color="blue";
+    if(active.type==="lunch") color="yellow";
 
-highlightSchedule(active.label,active.type);
+    highlightSchedule(active.label,active.type);
 
-}
+  }
 
-/* countdown arc */
+  /* countdown arc */
 
-if(active){
+  if(active){
 
-let total=toMin(active.end)-toMin(active.start);
-let remain=toMin(active.end)-mins;
+    let total=toMin(active.end)-toMin(active.start);
+    let remain=toMin(active.end)-mins;
 
-let percent=remain/total;
+    let percent=remain/total;
 
-let end=-Math.PI/2+percent*2*Math.PI;
+    let end=-Math.PI/2+percent*2*Math.PI;
 
-ctx.beginPath();
-ctx.arc(150,150,105,-Math.PI/2,end);
+    ctx.beginPath();
+    ctx.arc(150,150,105,-Math.PI/2,end);
 
-let pulse=6+Math.sin(Date.now()/200)*2;
+    let pulse=6+Math.sin(Date.now()/200)*2;
 
-ctx.lineWidth=pulse;
-ctx.strokeStyle=color;
-ctx.stroke();
+    ctx.lineWidth=pulse;
+    ctx.strokeStyle=color;
+    ctx.stroke();
 
-}
+  }
 
-/* DIGITAL CLOCK */
+  /* DIGITAL CLOCK */
 
-let h=now.getHours();
-let m=now.getMinutes().toString().padStart(2,"0");
-let s=now.getSeconds().toString().padStart(2,"0");
+  let h=now.getHours();
+  let m=now.getMinutes().toString().padStart(2,"0");
+  let s=now.getSeconds().toString().padStart(2,"0");
 
-let ampm=h>=12?"PM":"AM";
-h=h%12;
-if(h==0)h=12;
+  let ampm=h>=12?"PM":"AM";
+  h=h%12;
+  if(h==0)h=12;
 
-ctx.fillStyle="white";
-ctx.font="28px Arial";
-ctx.textAlign="center";
-ctx.textBaseline="middle";
+  ctx.fillStyle="white";
+  ctx.font="28px Arial";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
 
-ctx.fillText(`${h}:${m}:${s} ${ampm}`,150,150);
+  ctx.fillText(`${h}:${m}:${s} ${ampm}`,150,150);
 
-document.getElementById("periodLabel").textContent=label;
-document.getElementById("periodLabel").style.color=color;
+  document.getElementById("periodLabel").textContent=label;
+  document.getElementById("periodLabel").style.color=color;
 
 }
 
@@ -475,26 +217,26 @@ setInterval(drawClock,1000);
 
 async function loadWeather(){
 
-try{
+  try{
 
-const geoRes=await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`);
-const geoData=await geoRes.json();
+    const geoRes=await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`);
+    const geoData=await geoRes.json();
 
-const lat=geoData[0].lat;
-const lon=geoData[0].lon;
+    const lat=geoData[0].lat;
+    const lon=geoData[0].lon;
 
-const res=await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
+    const res=await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
 
-const data=await res.json();
+    const data=await res.json();
 
-document.getElementById("weather").textContent=
-`🌤 Weather: ${data.weather[0].main} / ${data.main.temp.toFixed(1)}°C`;
+    document.getElementById("weather").textContent=
+    `🌤 Weather: ${data.weather[0].main} / ${data.main.temp.toFixed(1)}°C`;
 
-}catch{
+  }catch{
 
-document.getElementById("weather").textContent="Weather Unavailable";
+    document.getElementById("weather").textContent="Weather Unavailable";
 
-}
+  }
 
 }
 
@@ -502,29 +244,29 @@ document.getElementById("weather").textContent="Weather Unavailable";
 
 async function loadAir(){
 
-try{
+  try{
 
-const geoRes=await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`);
-const geoData=await geoRes.json();
+    const geoRes=await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`);
+    const geoData=await geoRes.json();
 
-const lat=geoData[0].lat;
-const lon=geoData[0].lon;
+    const lat=geoData[0].lat;
+    const lon=geoData[0].lon;
 
-const res=await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
+    const res=await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
 
-const data=await res.json();
+    const data=await res.json();
 
-const aqi=data.list[0].main.aqi;
+    const aqi=data.list[0].main.aqi;
 
-const levels=["Good 😊","Fair 🙂","Moderate 😐","Poor 😷","Very Poor ☠️"];
+    const levels=["Good 😊","Fair 🙂","Moderate 😐","Poor 😷","Very Poor ☠️"];
 
-document.getElementById("air").textContent=`😷 Air Quality: ${levels[aqi-1]}`;
+    document.getElementById("air").textContent=`😷 Air Quality: ${levels[aqi-1]}`;
 
-}catch{
+  }catch{
 
-document.getElementById("air").textContent="Air Quality Unavailable";
+    document.getElementById("air").textContent="Air Quality Unavailable";
 
-}
+  }
 
 }
 
@@ -534,14 +276,11 @@ loadAir();
 /* ================= POPUP ================= */
 
 document.getElementById("today").onclick=()=>{
-weekPopup.style.display="flex";
+  weekPopup.style.display="flex";
 }
 
 weekPopup.onclick=()=>{
-weekPopup.style.display="none";
+  weekPopup.style.display="none";
 }
 
 </script>
-
-</body>
-</html>
