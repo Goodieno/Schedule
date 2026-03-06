@@ -6,6 +6,15 @@
 <title>Teacher Timer</title>
 
 <style>
+  
+/* ================= CURRENT CLASS HIGHLIGHT ================= */
+
+.currentClass{
+background:#1f3a5f;
+box-shadow:0 0 15px rgba(0,150,255,0.6);
+font-weight:bold;
+transition:all .3s ease;
+}
 
 /* ================= THEME ================= */
 
@@ -372,7 +381,8 @@ blocks.forEach((b)=>{
 if(b.type==="break") return;
 
 let row=document.createElement("tr");
-
+row.dataset.start=b.start;
+row.dataset.end=b.end;
 let p=document.createElement("td");
 p.textContent=b.label;
 
@@ -392,6 +402,40 @@ row.appendChild(c);
 table.appendChild(row);
 
 });
+/* ================= CURRENT CLASS DETECTOR ================= */
+
+function updateCurrentClass(){
+
+const now=new Date();
+const minutesNow=now.getHours()*60+now.getMinutes();
+
+const rows=document.querySelectorAll("#scheduleTable tr");
+
+rows.forEach(row=>{
+
+const start=row.dataset.start;
+const end=row.dataset.end;
+
+if(!start || !end) return;
+
+const [sh,sm]=start.split(":").map(Number);
+const [eh,em]=end.split(":").map(Number);
+
+const startMin=sh*60+sm;
+const endMin=eh*60+em;
+
+row.classList.remove("currentClass");
+
+if(minutesNow>=startMin && minutesNow<endMin){
+row.classList.add("currentClass");
+}
+
+});
+
+}
+
+setInterval(updateCurrentClass,10000);
+updateCurrentClass();
 /* ================= CLOCK ================= */
 
 const canvas=document.getElementById("clock");
