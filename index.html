@@ -285,7 +285,16 @@ Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
 /* ================= DATE ================= */
 
 const now=new Date();
-const today=now.toLocaleDateString("en-US",{weekday:"long"});
+
+/* ===== DEBUG DAY (for weekend testing) ===== */
+/* change to Monday, Tuesday, Wednesday, Thursday, Friday */
+
+let today="Monday";
+
+/* if you want automatic again later, use this instead:
+let today=now.toLocaleDateString("en-US",{weekday:"long"});
+*/
+
 document.getElementById("today").textContent=today;
 
 /* ================= BUILD TABLE ================= */
