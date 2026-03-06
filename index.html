@@ -9,50 +9,60 @@
 <style>
 
 body{
-margin:0;
 font-family:Arial, Helvetica, sans-serif;
-background:linear-gradient(180deg,#eef2f7,#dfe6f0);
+background:#0f172a;
+color:#e2e8f0;
+margin:0;
+padding:20px;
 display:flex;
 justify-content:center;
 }
 
 .container{
-max-width:420px;
 width:100%;
-padding:15px;
+max-width:420px;
 }
 
 .card{
-background:white;
-border-radius:16px;
-padding:16px;
-margin-bottom:16px;
-box-shadow:0 6px 18px rgba(0,0,0,0.08);
+background:#1e293b;
+border:1px solid #334155;
+border-radius:14px;
+padding:18px;
+margin-bottom:18px;
+box-shadow:0 0 10px rgba(0,0,0,0.4);
 }
 
 h2{
-margin:0 0 10px 0;
+margin-top:0;
 font-size:20px;
 }
 
-#clockTitle{
-text-align:center;
-font-size:18px;
-margin-bottom:8px;
-font-weight:bold;
+/* CLOCK */
+
+.clockWrap{
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
 }
 
 canvas{
-display:block;
-margin:auto;
+background:black;
+border-radius:50%;
 }
 
-#digital{
-text-align:center;
-font-size:28px;
+#timeLeft{
+font-size:32px;
+font-weight:bold;
 margin-top:10px;
-font-family:monospace;
 }
+
+#clockLabel{
+font-size:16px;
+opacity:.8;
+}
+
+/* WEATHER */
 
 .weatherRow{
 display:flex;
@@ -60,45 +70,60 @@ justify-content:space-between;
 font-size:18px;
 }
 
-.airBox{
-display:flex;
-justify-content:space-between;
-margin-top:6px;
-}
+/* SCHEDULE */
 
 table{
 width:100%;
 border-collapse:collapse;
 }
 
-td{
+td,th{
 padding:6px;
-border-bottom:1px solid #eee;
+text-align:center;
 }
 
-.small{
-font-size:14px;
-color:#555;
+th{
+color:#94a3b8;
+}
+
+.activeClass{
+animation:pulse 2s infinite;
+border-radius:6px;
+}
+
+@keyframes pulse{
+
+0%{box-shadow:0 0 5px #3b82f6;}
+50%{box-shadow:0 0 18px #3b82f6;}
+100%{box-shadow:0 0 5px #3b82f6;}
+
+}
+
+.weekSchedule{
+display:none;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
-<div class="card">
+<!-- CLOCK -->
 
-<div id="clockTitle">Loading...</div>
+<div class="card clockWrap">
 
 <canvas id="clock" width="260" height="260"></canvas>
 
-<div id="digital"></div>
+<div id="timeLeft">--:--</div>
+
+<div id="clockLabel">Loading...</div>
 
 </div>
 
+
+<!-- WEATHER -->
 
 <div class="card">
 
@@ -109,33 +134,87 @@ color:#555;
 <div id="weather">--</div>
 </div>
 
-<div class="small" id="humidity"></div>
-
-</div>
-
-
-<div class="card">
-
-<h2>Air Quality</h2>
-
-<div class="airBox">
-<div>PM2.5</div>
-<div id="pm25">--</div>
-</div>
-
-<div class="airBox">
-<div>PM10</div>
-<div id="pm10">--</div>
+<div style="margin-top:10px">
+Air Quality: <span id="air">--</span>
 </div>
 
 </div>
 
 
-<div class="card">
+<!-- TODAY SCHEDULE -->
 
-<h2>Weekly Classes</h2>
+<div class="card" onclick="toggleWeek()">
 
-<table id="scheduleTable"></table>
+<h2 id="todayTitle">Today's Classes</h2>
+
+<table id="todaySchedule"></table>
+
+</div>
+
+
+<!-- WEEK SCHEDULE -->
+
+<div class="card weekSchedule" id="weekCard">
+
+<h2>Weekly Schedule</h2>
+
+<table>
+
+<tr>
+<th>교시</th>
+<th>월</th>
+<th>화</th>
+<th>수</th>
+<th>목</th>
+<th>금</th>
+</tr>
+
+<tr>
+<td>1</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>5-6</td>
+<td>5-3</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>6-4</td>
+<td>-</td>
+<td>6-5</td>
+<td>5-5</td>
+<td>5-7</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>6-3</td>
+<td>-</td>
+<td>6-6</td>
+<td>5-4</td>
+<td>5-8</td>
+</tr>
+
+<tr>
+<td>4</td>
+<td>6-1</td>
+<td>-</td>
+<td>6-7</td>
+<td>5-1</td>
+<td>5-9</td>
+</tr>
+
+<tr>
+<td>5</td>
+<td>6-2</td>
+<td>-</td>
+<td>6-8</td>
+<td>5-2</td>
+<td>-</td>
+</tr>
+
+</table>
 
 </div>
 
@@ -144,101 +223,47 @@ color:#555;
 
 <script>
 
-// ============================
-// SETTINGS
-// ============================
-
-const API_KEY="fa9fe37b9be14839fe6774643939e974"
-
-const lat=36.893
-const lon=126.629
-
-// ============================
-// CLASS SCHEDULE
-// ============================
+/* SCHEDULE */
 
 const schedule={
-Monday:[null,"6-4","6-3","6-1","6-2",null],
+Monday:[null,"6-4 English","6-3 English","6-1 English","6-2 English",null],
 Tuesday:["Unavailable","Unavailable","Unavailable","Unavailable","Unavailable","Unavailable"],
-Wednesday:[null,"6-5","6-6","6-7","6-8",null],
-Thursday:["5-6","5-5","5-4","5-1","5-2",null],
-Friday:["5-3","5-7","5-8","5-9",null,null]
+Wednesday:[null,"6-5 English","6-6 English","6-7 English","6-8 English",null],
+Thursday:["5-6 English","5-5 English","5-4 English","5-1 English","5-2 English",null],
+Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
 }
 
-// ============================
-// TIME BLOCKS
-// ============================
+/* TIME BLOCKS */
 
-const timeBlocks={
-Monday:[
+const blocks=[
+
 {type:"class",label:"1st Period",start:"09:00",end:"09:40"},
 {type:"break",start:"09:40",end:"09:50"},
+
 {type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
 {type:"break",start:"10:30",end:"10:40"},
+
 {type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
 {type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
+
 {type:"class",label:"4th Period",start:"12:20",end:"13:00"},
 {type:"break",start:"13:00",end:"13:10"},
-{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
-],
 
-Wednesday:[
-{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
-{type:"lunch",label:"Lunch",start:"11:20",end:"12:20"},
-{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
-{type:"break",start:"13:00",end:"13:10"},
 {type:"class",label:"5th Period",start:"13:10",end:"13:50"},
 {type:"break",start:"13:50",end:"14:00"},
-{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
-],
 
-Thursday:[
-{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
-{type:"break",start:"11:20",end:"12:20"},
-{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
-{type:"lunch",label:"Lunch",start:"13:00",end:"13:10"},
-{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
 {type:"class",label:"6th Period",start:"14:00",end:"14:40"}
-],
 
-Friday:[
-{type:"class",label:"1st Period",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-{type:"class",label:"2nd Period",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-{type:"class",label:"3rd Period",start:"10:40",end:"11:20"},
-{type:"break",start:"11:20",end:"12:20"},
-{type:"class",label:"4th Period",start:"12:20",end:"13:00"},
-{type:"lunch",label:"Lunch",start:"13:00",end:"13:10"},
-{type:"class",label:"5th Period",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-{type:"class",label:"6th Period",start:"14:00",end:"14:40"}
 ]
-}
 
-// ============================
-// HELPER
-// ============================
+function toMin(t){
 
-function toMinutes(t){
 let [h,m]=t.split(":")
-return h*60+ +m
+return parseInt(h)*60+parseInt(m)
+
 }
 
-// ============================
-// CLOCK
-// ============================
+/* CLOCK */
 
 const canvas=document.getElementById("clock")
 const ctx=canvas.getContext("2d")
@@ -247,33 +272,22 @@ function drawClock(){
 
 let now=new Date()
 
-let h=now.getHours()
-let m=now.getMinutes()
-let s=now.getSeconds()
-
-let nowMin=h*60+m+s/60
+let nowMin=now.getHours()*60+now.getMinutes()+now.getSeconds()/60
 
 ctx.clearRect(0,0,260,260)
+
+/* face */
 
 ctx.beginPath()
 ctx.arc(130,130,120,0,Math.PI*2)
 ctx.fillStyle="black"
 ctx.fill()
 
-let day=now.toLocaleDateString("en-US",{weekday:"long"})
-
-let blocks=timeBlocks[day]
-
 let active=null
-
-if(blocks){
 
 for(let b of blocks){
 
-let start=toMinutes(b.start)
-let end=toMinutes(b.end)
-
-if(nowMin>=start && nowMin<=end){
+if(nowMin>=toMin(b.start)&&nowMin<=toMin(b.end)){
 
 active=b
 break
@@ -282,98 +296,110 @@ break
 
 }
 
-}
-
 if(active){
 
-document.getElementById("clockTitle").innerText=active.label
+let total=toMin(active.end)-toMin(active.start)
 
-let total=toMinutes(active.end)-toMinutes(active.start)
-let remain=toMinutes(active.end)-nowMin
+let remain=toMin(active.end)-nowMin
+
 let percent=remain/total
 
-let endAngle=-Math.PI/2 + percent*(Math.PI*2)
+let angle=-Math.PI/2+(percent*Math.PI*2)
 
-let color="blue"
+let color="red"
 
-if(active.type==="class")color="red"
+if(active.type==="break")color="blue"
 if(active.type==="lunch")color="yellow"
 
 ctx.beginPath()
-ctx.arc(130,130,100,-Math.PI/2,endAngle)
-
+ctx.arc(130,130,100,-Math.PI/2,angle)
+ctx.lineWidth=14
 ctx.strokeStyle=color
-ctx.lineWidth=12
 ctx.stroke()
+
+let min=Math.floor(remain)
+let sec=Math.floor((remain-min)*60)
+
+document.getElementById("timeLeft").innerText=
+min+":"+String(sec).padStart(2,"0")
+
+document.getElementById("clockLabel").innerText=active.label
 
 }
 
-let timeString=
-String(h).padStart(2,"0")+":"+
-String(m).padStart(2,"0")+":"+
-String(s).padStart(2,"0")
+}
 
-document.getElementById("digital").innerText=timeString
+/* TODAY TABLE */
+
+let today=new Date().toLocaleDateString("en-US",{weekday:"long"})
+
+let todayList=schedule[today]
+
+let table=document.getElementById("todaySchedule")
+
+todayList.forEach((c,i)=>{
+
+let row=document.createElement("tr")
+
+let p=document.createElement("td")
+p.innerText=(i+1)+"교시"
+
+let cls=document.createElement("td")
+cls.innerText=c||"-"
+
+row.appendChild(p)
+row.appendChild(cls)
+
+table.appendChild(row)
+
+})
+
+/* WEATHER */
+
+const API="YOUR_OPENWEATHER_API_KEY"
+
+fetch(`https://api.openweathermap.org/data/2.5/weather?q=Dangjin&units=metric&appid=${API}`)
+.then(r=>r.json())
+.then(d=>{
+
+document.getElementById("temp").innerText=Math.round(d.main.temp)+"°C"
+
+document.getElementById("weather").innerText=d.weather[0].main
+
+})
+
+/* AIR */
+
+fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=36.89&lon=126.63&appid=${API}`)
+.then(r=>r.json())
+.then(d=>{
+
+let aqi=d.list[0].main.aqi
+
+let text="Good"
+
+if(aqi==2)text="Fair"
+if(aqi==3)text="Moderate"
+if(aqi==4)text="Poor"
+if(aqi==5)text="Very Poor"
+
+document.getElementById("air").innerText=text
+
+})
+
+/* WEEK TOGGLE */
+
+function toggleWeek(){
+
+let w=document.getElementById("weekCard")
+
+w.style.display=(w.style.display=="block")?"none":"block"
 
 }
 
 setInterval(drawClock,1000)
 
-
-// ============================
-// WEATHER
-// ============================
-
-fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`)
-.then(res=>res.json())
-.then(data=>{
-
-document.getElementById("temp").innerText=Math.round(data.main.temp)+"°C"
-
-document.getElementById("weather").innerText=data.weather[0].main
-
-document.getElementById("humidity").innerText="Humidity "+data.main.humidity+"%"
-
-})
-
-
-// ============================
-// AIR QUALITY
-// ============================
-
-fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`)
-.then(res=>res.json())
-.then(data=>{
-
-document.getElementById("pm25").innerText=data.list[0].components.pm2_5
-
-document.getElementById("pm10").innerText=data.list[0].components.pm10
-
-})
-
-
-// ============================
-// WEEK TABLE
-// ============================
-
-let table=document.getElementById("scheduleTable")
-
-for(let day in schedule){
-
-let row=document.createElement("tr")
-
-let c1=document.createElement("td")
-c1.innerText=day
-
-let c2=document.createElement("td")
-c2.innerText=schedule[day].join(" / ")
-
-row.appendChild(c1)
-row.appendChild(c2)
-
-table.appendChild(row)
-
-}
+drawClock()
 
 </script>
 
