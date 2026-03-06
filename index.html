@@ -258,14 +258,6 @@ ctx.stroke();
 
 }
 
-/* faint track ring */
-
-ctx.beginPath();
-ctx.arc(150,150,105,0,Math.PI*2);
-ctx.strokeStyle="rgba(255,255,255,0.15)";
-ctx.lineWidth=4;
-ctx.stroke();
-
 /* active block */
 
 let blocks=dayBlocks[today]||[];
@@ -284,41 +276,40 @@ break;
 
 }
 
-let color="grey";
-
 if(active){
 
-if(active.type=="class") color="red";
-if(active.type=="break") color="deepskyblue";
-if(active.type=="lunch") color="yellow";
+let color="red";
 
-}
+if(active.type=="break")color="blue";
+if(active.type=="lunch")color="yellow";
 
-let start=active?toMin(active.start):mins;
-let endTime=active?toMin(active.end):mins+1;
-
-let total=endTime-start;
-let remain=endTime-mins;
+let total=toMin(active.end)-toMin(active.start);
+let remain=toMin(active.end)-mins;
 
 let percent=remain/total;
 
-let endAngle=-Math.PI/2+percent*2*Math.PI;
-
-/* countdown ring */
+let end=-Math.PI/2+percent*2*Math.PI;
 
 ctx.beginPath();
-ctx.arc(150,150,105,-Math.PI/2,endAngle);
+ctx.arc(150,150,105,-Math.PI/2,end);
 
-/* pulse effect */
+if(active.type=="class"){
 
-let pulse = 4 + Math.sin(Date.now()/180)*1.5;
-
+let pulse = 6 + Math.sin(Date.now()/200)*2;
 ctx.lineWidth = pulse;
+
+}else{
+
+ctx.lineWidth = 6;
+
+}
 
 ctx.strokeStyle=color;
 ctx.stroke();
 
-/* digital clock center */
+}
+
+/* ================= CENTER DIGITAL CLOCK ================= */
 
 let h = now.getHours();
 let m = now.getMinutes();
@@ -341,6 +332,8 @@ ctx.textBaseline = "middle";
 ctx.fillText(timeText,150,150);
 
 }
+
+setInterval(drawClock,1000);
 
 /* ================= WEATHER ================= */
 
