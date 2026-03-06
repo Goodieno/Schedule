@@ -4,21 +4,55 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Teacher Schedule</title>
+
 <style>
+
 body{
   font-family:Arial;
   background:#f2f2f2;
   text-align:center;
   padding:20px;
 }
+
 h1{margin-bottom:5px;}
-#today{font-size:22px;margin-bottom:20px;}
-table{margin:auto;border-collapse:collapse;background:white;}
-td,th{border:1px solid #ccc;padding:10px 18px;font-size:18px;}
-th{background:#eee;}
-#nextClass{margin-top:20px;font-size:22px;font-weight:bold;}
-#clockTitle{font-size:20px;margin-top:20px;font-weight:bold;}
-canvas{margin-top:10px;border-radius:50%;}
+
+#today{
+  font-size:22px;
+  margin-bottom:20px;
+}
+
+table{
+  margin:auto;
+  border-collapse:collapse;
+  background:white;
+}
+
+td,th{
+  border:1px solid #ccc;
+  padding:10px 18px;
+  font-size:18px;
+}
+
+th{
+  background:#eee;
+}
+
+#nextClass{
+  margin-top:20px;
+  font-size:22px;
+  font-weight:bold;
+}
+
+#clockTitle{
+  font-size:20px;
+  margin-top:20px;
+  font-weight:bold;
+}
+
+canvas{
+  margin-top:10px;
+}
+
 </style>
 </head>
 <body>
@@ -36,6 +70,7 @@ canvas{margin-top:10px;border-radius:50%;}
 <canvas id="clock" width="260" height="260"></canvas>
 
 <script>
+
 // WEEKLY CLASS LIST
 const schedule={
   Monday:[null,"6-4 English","6-3 English","6-1 English","6-2 English",null],
@@ -45,8 +80,9 @@ const schedule={
   Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
 };
 
-// TIME BLOCKS PER DAY
+// TIME BLOCKS
 const timeBlocks={
+
   Monday:[
     {type:"class",label:"1st Period",start:"09:00",end:"09:40"},
     {type:"break",start:"09:40",end:"09:50"},
@@ -60,6 +96,7 @@ const timeBlocks={
     {type:"break",start:"13:50",end:"14:00"},
     {type:"class",label:"6th Period",start:"14:00",end:"14:40"}
   ],
+
   Wednesday:[
     {type:"class",label:"1st Period",start:"09:00",end:"09:40"},
     {type:"break",start:"09:40",end:"09:50"},
@@ -73,6 +110,7 @@ const timeBlocks={
     {type:"break",start:"13:50",end:"14:00"},
     {type:"class",label:"6th Period",start:"14:00",end:"14:40"}
   ],
+
   Thursday:[
     {type:"class",label:"1st Period",start:"09:00",end:"09:40"},
     {type:"break",start:"09:40",end:"09:50"},
@@ -86,6 +124,7 @@ const timeBlocks={
     {type:"break",start:"13:50",end:"14:00"},
     {type:"class",label:"6th Period",start:"14:00",end:"14:40"}
   ],
+
   Friday:[
     {type:"class",label:"1st Period",start:"09:00",end:"09:40"},
     {type:"break",start:"09:40",end:"09:50"},
@@ -99,12 +138,12 @@ const timeBlocks={
     {type:"break",start:"13:50",end:"14:00"},
     {type:"class",label:"6th Period",start:"14:00",end:"14:40"}
   ]
+
 };
 
 // HOLIDAYS
 const holidays=["2026-03-01","2026-05-05","2026-06-06"];
 
-// DATE
 const now=new Date();
 const day=now.toLocaleDateString("en-US",{weekday:"long"});
 const todayISO=now.toISOString().split("T")[0];
@@ -114,7 +153,6 @@ const table=document.getElementById("scheduleTable");
 const nextDiv=document.getElementById("nextClass");
 const clockTitle=document.getElementById("clockTitle");
 
-// HOLIDAY
 if(holidays.includes(todayISO)){
   todayText.innerHTML="Holiday 🇰🇷";
 }else{
@@ -142,20 +180,21 @@ function toMinutes(t){
   return parseInt(h)*60+parseInt(m);
 }
 
-// CLOCK
 const canvas=document.getElementById("clock");
 const ctx=canvas.getContext("2d");
 
 function drawClock(){
+
   let now=new Date();
   let h=now.getHours();
   let m=now.getMinutes();
   let s=now.getSeconds();
+
   let nowMin=h*60+m+s/60;
 
   ctx.clearRect(0,0,260,260);
 
-  // face
+  // CLOCK FACE
   ctx.beginPath();
   ctx.arc(130,130,120,0,Math.PI*2);
   ctx.fillStyle="black";
@@ -163,20 +202,36 @@ function drawClock(){
 
   let blocks=timeBlocks[day];
   let active=null;
+  let next=null;
+
   if(blocks){
-    for(let b of blocks){
-      let start=toMinutes(b.start);
-      let end=toMinutes(b.end);
+
+    for(let i=0;i<blocks.length;i++){
+
+      let start=toMinutes(blocks[i].start);
+      let end=toMinutes(blocks[i].end);
+
       if(nowMin>=start && nowMin<=end){
-        active=b;
+        active=blocks[i];
+        next=blocks[i+1];
         break;
       }
+
+      if(nowMin<start && !next){
+        next=blocks[i];
+      }
+
     }
+
   }
 
-  let color=null;
+  if(next){
+    nextDiv.innerText="Next: "+(next.label || next.type)+" ("+next.start+")";
+  }
+
   if(active){
-    if(active.type==="class") color="red";
+
+    let color="red";
     if(active.type==="break") color="blue";
     if(active.type==="lunch") color="yellow";
 
@@ -184,4 +239,31 @@ function drawClock(){
 
     let total=toMinutes(active.end)-toMinutes(active.start);
     let remain=toMinutes(active.end)-nowMin;
-    let percent=
+    let percent=remain/total;
+
+    ctx.beginPath();
+    ctx.arc(130,130,100,-Math.PI/2,-Math.PI/2+(percent*2*Math.PI));
+    ctx.strokeStyle=color;
+    ctx.lineWidth=14;
+    ctx.stroke();
+
+  }
+
+  // DIGITAL TIME
+  ctx.fillStyle="white";
+  ctx.font="28px Arial";
+  ctx.textAlign="center";
+  ctx.fillText(
+    now.toLocaleTimeString(),
+    130,
+    140
+  );
+
+}
+
+setInterval(drawClock,1000);
+
+</script>
+
+</body>
+</html>
