@@ -307,10 +307,13 @@ if (!blocks) {
 
   // Content cell with text and image
   const contentC = document.createElement("td");
-  contentC.style.display = "flex";
-  contentC.style.alignItems = "center";
-  contentC.style.justifyContent = "center";
-  contentC.style.gap = "10px";
+  
+    // Content cell with text and image
+  const contentC = document.createElement("td");
+  contentC.style.display = "flex";          // Enables flexbox
+  contentC.style.alignItems = "center";      // Centers vertically
+  contentC.style.justifyContent = "center"; // Centers horizontally
+  contentC.style.gap = "15px";               // Adds space between "FREEdom" and the gif
 
   const textSpan = document.createElement("span");
   textSpan.textContent = "FREEdom";
