@@ -236,18 +236,12 @@ Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
 
 /* ================= DATE (MOCK FOR TESTING) ================= */
 // pretend it's Monday at 09:15 for testing
-let today = "Monday"; // keeps table showing Monday
-document.getElementById("today").textContent = today;
-
 const now = new Date();
 now.setHours(9);    // hour of current period
 now.setMinutes(15); // minute inside the period
 now.setSeconds(0);  // optional, start at 0 seconds
 
-const activeDay = dailyBlocks[today] ? today : "Monday";
-const blocks = dailyBlocks[activeDay];
-/* 
-===== DEBUG DAY ===== */
+/* ===== DEBUG DAY ===== */
 let today = "Monday"; // keeps your table showing Monday
 document.getElementById("today").textContent = today;
 
@@ -380,16 +374,15 @@ ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
 ctx.strokeStyle="white"; ctx.lineWidth=i%5==0?3:1; ctx.stroke();
 }
 /* active block */
-let active = null;
-const mins = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
-for (let b of blocks) {
-    if (!b.start || !b.end) continue;
-    const startMin = toMin(b.start);
-    const endMin = toMin(b.end);
-    if (mins >= startMin && mins < endMin) {
-        active = b;
-        break;
-    }
+let active=null;
+for(let b of blocks){ let s=toMin(b.start); let e=toMin(b.end); if(mins>=s && mins<=e){ active=b; break; } }
+let label="Free Time"; let color="gray";
+if(active){
+label=active.label;
+if(active.type==="class") color="red";
+if(active.type==="break") color="blue";
+if(active.type==="lunch") color="red";
+highlightSchedule(active.label,active.type);
 }
 /* countdown arc with pulse */
 if(active){
