@@ -423,7 +423,7 @@ if(total > 0){
     let percent = remain / total;
     let end = -Math.PI/2 + percent * 2 * Math.PI;
     ctx.beginPath(); 
-    ctx.arc(150,150,130,-Math.PI/2,end);
+    ctx.arc(150,150,140,-Math.PI/2,end);
     let pulse = 6 + Math.sin(Date.now()/200)*2;
     ctx.lineWidth = pulse; 
     ctx.strokeStyle = color; 
