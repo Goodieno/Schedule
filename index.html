@@ -225,78 +225,113 @@ th{color:#9cc9ff;}
 const API_KEY="fa9fe37b9be14839fe6774643939e974";
 
 /* ================= SCHEDULE ================= */
-const schedule={
-Monday:[null,"6-4 English","6-3 English","6-1 English","6-2 English",null],
-Tuesday:["Unavailable","Unavailable","Unavailable","Unavailable","Unavailable","Unavailable"],
-Wednesday:[null,"6-5 English","6-6 English","6-7 English","6-8 English",null],
-Thursday:["5-6 English","5-5 English","5-4 English","5-1 English","5-2 English",null],
-Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
+/* ================= SCHEDULE ================= */
+const schedule = {
+  Monday: [null, "6-4 English", "6-3 English", "6-1 English", "6-2 English", null],
+  Tuesday: ["Unavailable", "Unavailable", "Unavailable", "Unavailable", "Unavailable", "Unavailable"],
+  Wednesday: [null, "6-5 English", "6-6 English", "6-7 English", "6-8 English", null],
+  Thursday: ["5-6 English", "5-5 English", "5-4 English", "5-1 English", "5-2 English", null],
+  Friday: ["5-3 English", "5-7 English", "5-8 English", "5-9 English", null, null]
 };
 
 /* ================= DATE (REAL-TIME) ================= */
 const now = new Date();
-let today = now.toLocaleDateString('en-US', { weekday: 'long' });
+const today = now.toLocaleDateString('en-US', { weekday: 'long' });
 document.getElementById("today").textContent = today;
 
 /* ================= BUILD TABLE ================= */
-const table=document.getElementById("scheduleTable");
-const dailyBlocks={
-Monday:[
-{type:"class",label:"1교시",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-{type:"class",label:"2교시",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-{type:"class",label:"3교시",start:"10:40",end:"11:20"},
-{type:"lunch",label:"점심시간",start:"11:20",end:"12:20"},
-{type:"class",label:"4교시",start:"12:20",end:"13:00"},
-{type:"break",start:"13:00",end:"13:10"},
-{type:"class",label:"5교시",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-{type:"class",label:"6교시",start:"14:00",end:"14:40"}
-],
-Wednesday:[
-{type:"class",label:"1교시",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-{type:"class",label:"2교시",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-{type:"class",label:"3교시",start:"10:40",end:"11:20"},
-{type:"lunch",label:"점심시간",start:"11:20",end:"12:20"},
-{type:"class",label:"4교시",start:"12:20",end:"13:00"},
-{type:"break",start:"13:00",end:"13:10"},
-{type:"class",label:"5교시",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-{type:"class",label:"6교시",start:"14:00",end:"14:40"}
-],
-Thursday:[
-{type:"class",label:"1교시",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-{type:"class",label:"2교시",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-{type:"class",label:"3교시",start:"10:40",end:"11:20"},
-{type:"class",label:"4교시",start:"11:20",end:"12:00"},
-{type:"lunch",label:"점심시간",start:"12:00",end:"13:00"},
-{type:"class",label:"5교시",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-{type:"class",label:"6교시",start:"14:00",end:"14:40"}
-],
-Friday:[
-{type:"class",label:"1교시",start:"09:00",end:"09:40"},
-{type:"break",start:"09:40",end:"09:50"},
-{type:"class",label:"2교시",start:"09:50",end:"10:30"},
-{type:"break",start:"10:30",end:"10:40"},
-{type:"class",label:"3교시",start:"10:40",end:"11:20"},
-{type:"class",label:"4교시",start:"11:20",end:"12:00"},
-{type:"lunch",label:"점심시간",start:"12:00",end:"13:00"},
-{type:"class",label:"5교시",start:"13:10",end:"13:50"},
-{type:"break",start:"13:50",end:"14:00"},
-{type:"class",label:"6교시",start:"14:00",end:"14:40"}
-]
+const table = document.getElementById("scheduleTable");
+const dailyBlocks = {
+  Monday: [
+    { type: "class", label: "1교시", start: "09:00", end: "09:40" },
+    { type: "break", start: "09:40", end: "09:50" },
+    { type: "class", label: "2교시", start: "09:50", end: "10:30" },
+    { type: "break", start: "10:30", end: "10:40" },
+    { type: "class", label: "3교시", start: "10:40", end: "11:20" },
+    { type: "lunch", label: "점심시간", start: "11:20", end: "12:20" },
+    { type: "class", label: "4교시", start: "12:20", end: "13:00" },
+    { type: "break", start: "13:00", end: "13:10" },
+    { type: "class", label: "5교시", start: "13:10", end: "13:50" },
+    { type: "break", start: "13:50", end: "14:00" },
+    { type: "class", label: "6교시", start: "14:00", end: "14:40" }
+  ],
+  Wednesday: [
+    { type: "class", label: "1교시", start: "09:00", end: "09:40" },
+    { type: "break", start: "09:40", end: "09:50" },
+    { type: "class", label: "2교시", start: "09:50", end: "10:30" },
+    { type: "break", start: "10:30", end: "10:40" },
+    { type: "class", label: "3교시", start: "10:40", end: "11:20" },
+    { type: "lunch", label: "점심시간", start: "11:20", end: "12:20" },
+    { type: "class", label: "4교시", start: "12:20", end: "13:00" },
+    { type: "break", start: "13:00", end: "13:10" },
+    { type: "class", label: "5교시", start: "13:10", end: "13:50" },
+    { type: "break", start: "13:50", end: "14:00" },
+    { type: "class", label: "6교시", start: "14:00", end: "14:40" }
+  ],
+  Thursday: [
+    { type: "class", label: "1교시", start: "09:00", end: "09:40" },
+    { type: "break", start: "09:40", end: "09:50" },
+    { type: "class", label: "2교시", start: "09:50", end: "10:30" },
+    { type: "break", start: "10:30", end: "10:40" },
+    { type: "class", label: "3교시", start: "10:40", end: "11:20" },
+    { type: "class", label: "4교시", start: "11:20", end: "12:00" },
+    { type: "lunch", label: "점심시간", start: "12:00", end: "13:00" },
+    { type: "class", label: "5교시", start: "13:10", end: "13:50" },
+    { type: "break", start: "13:50", end: "14:00" },
+    { type: "class", label: "6교시", start: "14:00", end: "14:40" }
+  ],
+  Friday: [
+    { type: "class", label: "1교시", start: "09:00", end: "09:40" },
+    { type: "break", start: "09:40", end: "09:50" },
+    { type: "class", label: "2교시", start: "09:50", end: "10:30" },
+    { type: "break", start: "10:30", end: "10:40" },
+    { type: "class", label: "3교시", start: "10:40", end: "11:20" },
+    { type: "class", label: "4교시", start: "11:20", end: "12:00" },
+    { type: "lunch", label: "점심시간", start: "12:00", end: "13:00" },
+    { type: "class", label: "5교시", start: "13:10", end: "13:50" },
+    { type: "break", start: "13:50", end: "14:00" },
+    { type: "class", label: "6교시", start: "14:00", end: "14:40" }
+  ]
 };
 
-const activeDay=dailyBlocks[today]?today:"Monday";
-const blocks=dailyBlocks[activeDay];
-let classIndex=0;
-blocks.forEach((b) => {
+// Check if today is a scheduled day. If not (Sat/Sun), use "Freedom"
+const blocks = dailyBlocks[today];
+
+if (!blocks) {
+  // === SPECIAL "FREEDOM" HANDLING (SAT/SUN) ===
+  const row = document.createElement("tr");
+
+  // Title cell
+  const titleP = document.createElement("td");
+  titleP.textContent = "WEEKEND"; // Label the period type
+
+  // Content cell with text and image
+  const contentC = document.createElement("td");
+  contentC.style.display = "flex";
+  contentC.style.alignItems = "center";
+  contentC.style.justifyContent = "center";
+  contentC.style.gap = "10px";
+
+  const textSpan = document.createElement("span");
+  textSpan.textContent = "FREEdom";
+  textSpan.style.fontSize = "24px";
+  textSpan.style.fontWeight = "bold";
+
+  const img = document.createElement("img");
+  img.src = "image_0.png"; // Use the filename provided
+  img.style.width = "40px"; // Size to match the row height
+  img.style.height = "40px";
+
+  contentC.appendChild(textSpan);
+  contentC.appendChild(img);
+
+  row.appendChild(titleP);
+  row.appendChild(contentC);
+  table.appendChild(row);
+} else {
+  // === STANDARD SCHEDULE BUILDING ===
+  let classIndex = 0;
+  blocks.forEach((b) => {
     if (b.type === "break") return;
 
     let row = document.createElement("tr");
@@ -312,7 +347,7 @@ blocks.forEach((b) => {
 
     let c = document.createElement("td");
     if (b.type === "class") {
-        c.textContent = (schedule[activeDay] || [])[classIndex] || "-";
+        c.textContent = (schedule[today] || [])[classIndex] || "-";
         classIndex++;
     }
     if (b.type === "lunch") {
@@ -322,7 +357,9 @@ blocks.forEach((b) => {
     row.appendChild(p);
     row.appendChild(c);
     table.appendChild(row);
-});
+  });
+}
+
 
 /* ================= CURRENT CLASS DETECTOR ================= */
 function updateCurrentClass(){
