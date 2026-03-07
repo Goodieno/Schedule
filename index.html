@@ -374,7 +374,7 @@ function drawClock(){
         ctx.strokeStyle="white"; ctx.lineWidth=i%5==0?3:1; ctx.stroke();
     }
   
-    /* Determine active block */
+/* Determine active block */
 let active = null;
 for(let b of blocks){
     let s = toMin(b.start); 
@@ -407,14 +407,14 @@ if(active){
     if(nextBlock){
         label = `Free Time → ${nextBlock.label}`;
         color = "gray";
-        total = toMin(nextBlock.start) - mins; // total time left
-        remain = total; // countdown arc uses remain/total
+        total = toMin(nextBlock.start) - mins; // duration until next block
+        remain = total; // countdown arc uses remain
     } else {
         // No more blocks today
         label = "Free Time → End of Day";
         color = "gray";
-        total = 60; // arbitrary small number to keep arc from error
-        remain = 0;
+        total = 1;   // must be >0 to draw arc
+        remain = 1;  // keep arc full
     }
 }
 
@@ -429,7 +429,6 @@ if(total > 0){
     ctx.strokeStyle = color; 
     ctx.stroke();
 }
-
     /* DIGITAL CLOCK */
     let h = now.getHours(); 
     let m = now.getMinutes().toString().padStart(2,"0"); 
