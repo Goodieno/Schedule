@@ -150,7 +150,6 @@ th{color:#9cc9ff;}
 <tr><th>Period</th><th>Class</th></tr>
 </table>
 
-<!-- WEEK POPUP -->
 <div id="weekPopup">
 <div id="weekBox">
 <h3>벤자민 (영어)</h3>
@@ -225,7 +224,6 @@ th{color:#9cc9ff;}
 const API_KEY="fa9fe37b9be14839fe6774643939e974";
 
 /* ================= SCHEDULE ================= */
-/* ================= SCHEDULE ================= */
 const schedule = {
   Monday: [null, "6-4 English", "6-3 English", "6-1 English", "6-2 English", null],
   Tuesday: ["Unavailable", "Unavailable", "Unavailable", "Unavailable", "Unavailable", "Unavailable"],
@@ -294,60 +292,41 @@ const dailyBlocks = {
   ]
 };
 
-// Check if today is a scheduled day. If not (Sat/Sun), use "Freedom"
 const blocks = dailyBlocks[today];
 
 if (!blocks) {
-  // === SPECIAL "FREEDOM" HANDLING (SAT/SUN) ===
   const row = document.createElement("tr");
-
-  // Title cell
   const titleP = document.createElement("td");
-  titleP.textContent = "WEEKEND"; // Label the period type
+  titleP.textContent = "WEEKEND";
 
-  // Content cell with text and image
   const contentC = document.createElement("td");
-  
-    // Content cell with text and image
-  const contentC = document.createElement("td");
-  contentC.style.display = "flex";          // Enables flexbox
-  contentC.style.alignItems = "center";      // Centers vertically
-  contentC.style.justifyContent = "center"; // Centers horizontally
-  contentC.style.gap = "15px";               // Adds space between "FREEdom" and the gif
+  contentC.style.display = "flex";
+  contentC.style.alignItems = "center";
+  contentC.style.justifyContent = "center";
+  contentC.style.gap = "15px";
 
   const textSpan = document.createElement("span");
-  textSpan.textContent = "FREEdom";
+  textSpan.textContent = "FREEdom 😊 🥳 ";
   textSpan.style.fontSize = "24px";
   textSpan.style.fontWeight = "bold";
 
-  const img = document.createElement("img");
-  img.src = "image_0.png"; // Use the filename provided
-  img.style.width = "40px"; // Size to match the row height
-  img.style.height = "40px";
-
   contentC.appendChild(textSpan);
-  contentC.appendChild(img);
-
   row.appendChild(titleP);
   row.appendChild(contentC);
   table.appendChild(row);
 } else {
-  // === STANDARD SCHEDULE BUILDING ===
   let classIndex = 0;
   blocks.forEach((b) => {
     if (b.type === "break") return;
-
     let row = document.createElement("tr");
     row.dataset.start = b.start;
     row.dataset.end = b.end;
-
     let p = document.createElement("td");
     let timeSpan = document.createElement("span");
     timeSpan.className = "periodTime";
     timeSpan.textContent = `${b.start}-${b.end}`;
     p.appendChild(timeSpan);
     p.appendChild(document.createTextNode(b.label));
-
     let c = document.createElement("td");
     if (b.type === "class") {
         c.textContent = (schedule[today] || [])[classIndex] || "-";
@@ -356,13 +335,11 @@ if (!blocks) {
     if (b.type === "lunch") {
         c.innerHTML = '<span class="lunchText">LUNCH</span>';
     }
-
     row.appendChild(p);
     row.appendChild(c);
     table.appendChild(row);
   });
 }
-
 
 /* ================= CURRENT CLASS DETECTOR ================= */
 function updateCurrentClass(){
@@ -396,32 +373,33 @@ function drawClock(){
     let mins = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
     ctx.clearRect(0,0,300,300);
 
-    /* face */
+    /* face - 5% smaller radius (133) */
     ctx.beginPath(); 
-    ctx.arc(150,150,140,0,Math.PI*2); 
+    ctx.arc(150,150,133,0,Math.PI*2); 
     ctx.fillStyle="#1f3a5f"; 
     ctx.fill();
 
-    /* ticks */
+    /* ticks - adjusted for smaller radius (113) */
     for(let i=0;i<60;i++){
         let angle=i*Math.PI/30; 
         let len=i%5==0?15:7;
-        let x1=150+Math.cos(angle)*(120-len); 
-        let y1=150+Math.sin(angle)*(120-len);
-        let x2=150+Math.cos(angle)*120; 
-        let y2=150+Math.sin(angle)*120;
+        let x1=150+Math.cos(angle)*(113-len); 
+        let y1=150+Math.sin(angle)*(113-len);
+        let x2=150+Math.cos(angle)*113; 
+        let y2=150+Math.sin(angle)*113;
         ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
         ctx.strokeStyle="white"; ctx.lineWidth=i%5==0?3:1; ctx.stroke();
     }
   
-/* Determine active block */
 let active = null;
-for(let b of blocks){
-    let s = toMin(b.start); 
-    let e = toMin(b.end); 
-    if(mins >= s && mins <= e){ 
-        active = b; 
-        break; 
+if (blocks) {
+    for(let b of blocks){
+        let s = toMin(b.start); 
+        let e = toMin(b.end); 
+        if(mins >= s && mins <= e){ 
+            active = b; 
+            break; 
+        }
     }
 }
 
@@ -435,35 +413,33 @@ if(active){
     if(active.type==="class") color="red";
     if(active.type==="break") color="blue";
     if(active.type==="lunch") color="red";
-
     total = toMin(active.end) - toMin(active.start);
     remain = toMin(active.end) - mins;
-
     highlightSchedule(active.label, active.type);
-} else {
-    // ===== FREE TIME HANDLING =====
-    // Find the next block
+} else if (blocks) {
     let nextBlock = blocks.find(b => mins < toMin(b.start));
     if(nextBlock){
         label = `Free Time → ${nextBlock.label}`;
         color = "gray";
-        total = toMin(nextBlock.start) - mins; // duration until next block
-        remain = total; // countdown arc uses remain
+        total = toMin(nextBlock.start) - mins;
+        remain = total;
     } else {
-        // No more blocks today
         label = "Free Time → End of Day";
         color = "gray";
-        total = 1;   // must be >0 to draw arc
-        remain = 1;  // keep arc full
+        total = 1; remain = 1;
     }
+} else {
+    label = "FREEdom! 🥳";
+    color = "gray";
+    total = 1; remain = 1;
 }
 
-/* countdown arc with pulse */
+/* countdown arc bordering the face (133) */
 if(total > 0){
     let percent = remain / total;
     let end = -Math.PI/2 + percent * 2 * Math.PI;
     ctx.beginPath(); 
-    ctx.arc(150,150,145,-Math.PI/2,end);
+    ctx.arc(150,150,133,-Math.PI/2,end);
     let pulse = 6 + Math.sin(Date.now()/200)*2;
     ctx.lineWidth = pulse; 
     ctx.strokeStyle = color; 
@@ -484,6 +460,8 @@ if(total > 0){
     document.getElementById("periodLabel").textContent = label;
     document.getElementById("periodLabel").style.color = color;
 }
+
+setInterval(drawClock, 100);
 
 /* ================= WEATHER ================= */
 async function loadWeather(){
@@ -515,9 +493,6 @@ const weekPopup=document.getElementById("weekPopup");
 document.getElementById("today").onclick=()=>{ weekPopup.style.display="flex"; }
 weekPopup.onclick=()=>{ weekPopup.style.display="none"; }
 
-setInterval(drawClock, 100);
-
 </script>
-
 </body>
 </html>
