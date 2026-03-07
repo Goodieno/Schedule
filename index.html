@@ -368,7 +368,7 @@ if(type==="class") r.classList.add("activeRowClass");
 if(type==="lunch") r.classList.add("activeRowLunch");
 }});
 }
-  
+
 function drawClock(){
     let now = new Date();
     let mins = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
@@ -431,17 +431,15 @@ function drawClock(){
         }
     } else {
         // === WEEKEND COUNTDOWN LOGIC ===
-        color = "#00d4ff"; // A nice glowing cyan for the weekend
+        color = "#00d4ff"; 
         label = "WEEKEND FREEDOM";
         
-        // Calculate the "Start" (Friday 16:30)
         let friday = new Date(now);
-        let day = friday.getDay(); // 0 is Sun, 5 is Fri, 6 is Sat
+        let day = friday.getDay(); 
         let diffToFri = (day >= 5) ? (day - 5) : (day + 2);
         friday.setDate(now.getDate() - diffToFri);
         friday.setHours(16, 30, 0, 0);
 
-        // Calculate the "End" (Monday 08:30)
         let monday = new Date(friday);
         monday.setDate(friday.getDate() + 3);
         monday.setHours(8, 30, 0, 0);
@@ -449,7 +447,6 @@ function drawClock(){
         total = monday.getTime() - friday.getTime();
         remain = monday.getTime() - now.getTime();
         
-        // Clamp values so the ring doesn't break if you're outside the window
         if (remain < 0) remain = 0;
         if (remain > total) remain = total;
     }
@@ -481,6 +478,7 @@ function drawClock(){
     document.getElementById("periodLabel").textContent = label;
     document.getElementById("periodLabel").style.color = color;
 }
+setInterval(drawClock, 100);
 
 /* ================= WEATHER ================= */
 async function loadWeather(){
