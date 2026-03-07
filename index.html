@@ -234,15 +234,11 @@ Thursday:["5-6 English","5-5 English","5-4 English","5-1 English","5-2 English",
 Friday:["5-3 English","5-7 English","5-8 English","5-9 English",null,null]
 };
 
-/* ================= DATE (MOCK FOR TESTING) ================= */
-// pretend it's Monday at 09:15 for testing
-const now = new Date();
-now.setHours(9);    // hour of current period
-now.setMinutes(15); // minute inside the period
-now.setSeconds(0);  // optional, start at 0 seconds
+/* ================= DATE (REAL-TIME) ================= */
+const now = new Date(); // uses real current date & time
 
 /* ===== DEBUG DAY ===== */
-let today = "Monday"; // keeps your table showing Monday
+let today = now.toLocaleDateString('en-US', { weekday: 'long' }); // gets actual weekday name
 document.getElementById("today").textContent = today;
 
 /* ================= BUILD TABLE ================= */
