@@ -48,6 +48,20 @@ transition:all .3s ease;
   display: inline;
 }
 
+/* ================= EMOJI RAIN ================= */
+.falling-emoji {
+  position: fixed;
+  top: -50px;
+  z-index: 9999;
+  pointer-events: none;
+  font-size: 24px;
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to { transform: translateY(110vh) rotate(360deg); }
+}
+
 /* ================= THEME ================= */
 body{
 background:#0b1626;
@@ -56,6 +70,7 @@ color:white;
 text-align:center;
 margin:0;
 padding:20px;
+overflow-x: hidden; /* Prevent horizontal scroll from rain */
 }
 h2{margin:10px 0;cursor:pointer;}
 #clockBox{margin:auto;width:320px;}
@@ -479,6 +494,33 @@ function drawClock(){
     document.getElementById("periodLabel").style.color = color;
 }
 setInterval(drawClock, 100);
+
+/* ================= EMOJI RAIN ENGINE ================= */
+function startEmojiRain() {
+  setInterval(() => {
+    // Only rain when it's the weekend (no schedule blocks)
+    if (!blocks) {
+      const currentTime = new Date();
+      const day = currentTime.getDay();
+      const hour = currentTime.getHours();
+      
+      // Sunday is 0. Shift to poo emojis if it's Sunday after 9 PM.
+      const isPooTime = (day === 0 && hour >= 21);
+      const emojis = isPooTime ? ['💩'] : ['🎉', '✨', '🎊', '🥳'];
+      
+      const e = document.createElement('div');
+      e.className = 'falling-emoji';
+      e.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      e.style.left = Math.random() * 100 + 'vw';
+      e.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      e.style.opacity = Math.random();
+      
+      document.body.appendChild(e);
+      setTimeout(() => e.remove(), 5000);
+    }
+  }, 300);
+}
+startEmojiRain();
 
 /* ================= WEATHER ================= */
 async function loadWeather(){
