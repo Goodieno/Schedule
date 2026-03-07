@@ -27,25 +27,117 @@
 .pulseLunch{animation:ringPulseRed 2s infinite ease-in-out;}
 .pulseFree{animation:ringPulseGray 2s infinite ease-in-out;}
 
-/* ================= CURRENT CLASS HIGHLIGHT ================= */
-.currentClass{
-background:#1f3a5f;
-box-shadow:0 0 15px rgba(0,150,255,0.6);
-font-weight:bold;
-transition:all .3s ease;
+/* ================= THEME & LAYOUT ================= */
+body{
+background:#0b1626;
+font-family:Arial, sans-serif;
+color:white;
+text-align:center;
+margin:0;
+padding:20px;
+overflow-x: hidden;
+}
+h2{margin:10px 0;cursor:pointer;}
+#clockBox{margin:auto;width:320px;}
+canvas{background:#1f3a5f;border-radius:50%;box-shadow:0 0 20px rgba(0,140,255,.4);}
+#periodLabel{font-size:22px;font-weight:bold;margin-top:10px;}
+#info{margin-top:20px;font-size:18px;}
+#weather,#air{font-weight:bold;margin-top:5px;}
+
+/* Main Schedule Table Aesthetics */
+#scheduleTable {
+  margin: auto;
+  margin-top: 20px;
+  border-collapse: collapse;
+  width: 95%;
+  max-width: 400px;
+  background: #1f3a5f;
+  border-radius: 12px;
+  overflow: hidden;
+}
+#scheduleTable th {
+  background: #2a4d7d;
+  color: #9cc9ff;
+  padding: 12px;
+}
+#scheduleTable td {
+  padding: 12px;
+  border-bottom: 1px solid #0b1626;
+}
+.currentClass {
+  background: #2d5a8b;
+  box-shadow: inset 0 0 10px rgba(0,150,255,0.4);
+  font-weight: bold;
 }
 
-/* Small period time on hover/touch */
 .periodTime {
   font-size: 10px;
   color: #aaa;
-  margin-right: 5px;
+  margin-right: 8px;
   display: none;
 }
+#scheduleTable td:hover .periodTime { display: inline; }
 
-#scheduleTable td:hover .periodTime,
-#scheduleTable td:active .periodTime {
-  display: inline;
+.lunchText{color:#ff6b6b; font-weight:bold;}
+
+/* ================= POPUP MENU STYLE ================= */
+#weekPopup {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+#weekBox {
+  background: #1f3a5f;
+  padding: 20px;
+  border-radius: 15px;
+  width: 95%;
+  max-width: 650px;
+  color: white;
+  border: 1px solid #3d5afe;
+}
+#weekBox h3 {
+  margin-top: 0;
+  text-align: center;
+  color: #9cc9ff;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+}
+#weekTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+#weekTable th {
+  background: #2a4d7d;
+  color: #ffffff;
+  padding: 10px;
+  font-size: 14px;
+}
+#weekTable td {
+  padding: 8px;
+  border: 1px solid #0b1626;
+  font-size: 13px;
+  height: 60px;
+  vertical-align: middle;
+}
+.lunchRed {
+  color: #ff6b6b;
+  font-size: 10px;
+  font-weight: bold;
+  display: block;
+  margin-top: 4px;
+}
+.lunchPurple {
+  color: #b085ff;
+  font-size: 10px;
+  font-weight: bold;
+  display: block;
+  margin-top: 4px;
 }
 
 /* ================= EMOJI RAIN ================= */
@@ -57,91 +149,8 @@ transition:all .3s ease;
   font-size: 24px;
   animation: fall linear forwards;
 }
-
 @keyframes fall {
   to { transform: translateY(110vh) rotate(360deg); }
-}
-
-/* ================= THEME ================= */
-body{
-background:#0b1626;
-font-family:Arial;
-color:white;
-text-align:center;
-margin:0;
-padding:20px;
-overflow-x: hidden; /* Prevent horizontal scroll from rain */
-}
-h2{margin:10px 0;cursor:pointer;}
-#clockBox{margin:auto;width:320px;}
-canvas{background:#1f3a5f;border-radius:50%;box-shadow:0 0 20px rgba(0,140,255,.4);}
-#periodLabel{font-size:22px;font-weight:bold;margin-top:10px;}
-#info{margin-top:20px;font-size:18px;}
-#weather,#air{font-weight:bold;margin-top:5px;}
-table{margin:auto;margin-top:20px;border-collapse:collapse;width:95%;max-width:400px;}
-th,td{padding:10px;border-bottom:1px solid #333;}
-th{color:#9cc9ff;}
-.activeRowClass{background:rgba(255,0,0,.25);}
-.activeRowLunch{background:rgba(255,255,0,.35);}
-.lunchText{color:red;font-weight:bold;}
-
-/* WEEK POPUP */
-#weekPopup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-#weekBox {
-  background: #3a3f45;
-  padding: 20px;
-  border-radius: 12px;
-  width: 95%;
-  max-width: 600px;
-  color: #e0e0e0;
-}
-
-#weekBox h3 {
-  margin-top: 0;
-  text-align: left;
-  color: #ffffff;
-}
-
-#weekTable {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: center;
-}
-
-#weekTable th {
-  background: #50555c;
-  color: #ffffff;
-  padding: 8px;
-}
-
-#weekTable td {
-  padding: 10px;
-  border-top: 1px solid #666;
-  color: #e0e0e0;
-}
-
-.lunchRed {
-  color: #ff6b6b;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.lunchPurple {
-  color: #b085ff;
-  font-size: 12px;
-  font-weight: bold;
 }
 </style>
 </head>
@@ -158,7 +167,7 @@ th{color:#9cc9ff;}
 
 <div id="info">
 <div id="weather">🌤 Weather</div>
-<div id="air">😷 Air Quality</div>
+<div id="air"> Air Quality</div>
 </div>
 
 <table id="scheduleTable">
@@ -167,70 +176,15 @@ th{color:#9cc9ff;}
 
 <div id="weekPopup">
 <div id="weekBox">
-<h3>벤자민 (영어)</h3>
+<h3>벤자민 (영어) 📅</h3>
 <table id="weekTable">
-<tr>
-  <th>교시</th>
-  <th>월</th>
-  <th>화</th>
-  <th>수</th>
-  <th>목</th>
-  <th>금</th>
-</tr>
-
-<tr>
-  <td>1교시</td>
-  <td><div></div></td>
-  <td><div></div></td>
-  <td><div></div></td>
-  <td><div>5-6<br>영어</div></td>
-  <td><div>5-3<br>영어</div></td>
-</tr>
-
-<tr>
-  <td>2교시</td>
-  <td><div>6-4<br>영어</div></td>
-  <td><div></div></td>
-  <td><div>6-5<br>영어</div></td>
-  <td><div>5-5<br>영어</div></td>
-  <td><div>5-7<br>영어</div></td>
-</tr>
-
-<tr>
-  <td>3교시</td>
-  <td><div>6-3<br>영어<br><span class="lunchRed">LUNCH 11:20-12:20</span></div></td>
-  <td><div></div></td>
-  <td><div>6-6<br>영어<br><span class="lunchRed">LUNCH 11:20-12:20</span></div></td>
-  <td><div>5-4<br>영어</div></td>
-  <td><div>5-8<br>영어</div></td>
-</tr>
-
-<tr>
-  <td>4교시</td>
-  <td><div><br>6-1<br>영어</div></td>
-  <td><div></div></td>
-  <td><div><br>6-7<br>영어</div></td>
-  <td><div>5-1<br>영어<br><span class="lunchPurple">LUNCH 12:10-13:10</span></div></td>
-  <td><div>5-9<br>영어<br><span class="lunchPurple">LUNCH 12:10-13:10</span></div></td>
-</tr>
-
-<tr>
-  <td>5교시</td>
-  <td><div>6-2<br>영어</div></td>
-  <td><div></div></td>
-  <td><div>6-8<br>영어</div></td>
-  <td><div>5-2<br>영어</div></td>
-  <td><div></div></td>
-</tr>
-
-<tr>
-  <td>6교시</td>
-  <td><div></div></td>
-  <td><div></div></td>
-  <td><div></div></td>
-  <td><div></div></td>
-  <td><div></div></td>
-</tr>
+<tr><th>교시</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th></tr>
+<tr><td>1교시</td><td>-</td><td>-</td><td>-</td><td>5-6 영어</td><td>5-3 영어</td></tr>
+<tr><td>2교시</td><td>6-4 영어</td><td>-</td><td>6-5 영어</td><td>5-5 영어</td><td>5-7 영어</td></tr>
+<tr><td>3교시</td><td>6-3 영어<br><span class="lunchRed">LUNCH 11:20</span></td><td>-</td><td>6-6 영어<br><span class="lunchRed">LUNCH 11:20</span></td><td>5-4 영어</td><td>5-8 영어</td></tr>
+<tr><td>4교시</td><td>6-1 영어</td><td>-</td><td>6-7 영어</td><td>5-1 영어<br><span class="lunchPurple">LUNCH 12:10</span></td><td>5-9 영어<br><span class="lunchPurple">LUNCH 12:10</span></td></tr>
+<tr><td>5교시</td><td>6-2 영어</td><td>-</td><td>6-8 영어</td><td>5-2 영어</td><td>-</td></tr>
+<tr><td>6교시</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
 </table>
 </div>
 </div>
@@ -238,21 +192,18 @@ th{color:#9cc9ff;}
 <script>
 const API_KEY="fa9fe37b9be14839fe6774643939e974";
 
-/* ================= SCHEDULE ================= */
 const schedule = {
   Monday: [null, "6-4 English", "6-3 English", "6-1 English", "6-2 English", null],
-  Tuesday: ["Unavailable", "Unavailable", "Unavailable", "Unavailable", "Unavailable", "Unavailable"],
+  Tuesday: ["-", "-", "-", "-", "-", "-"],
   Wednesday: [null, "6-5 English", "6-6 English", "6-7 English", "6-8 English", null],
   Thursday: ["5-6 English", "5-5 English", "5-4 English", "5-1 English", "5-2 English", null],
   Friday: ["5-3 English", "5-7 English", "5-8 English", "5-9 English", null, null]
 };
 
-/* ================= DATE (REAL-TIME) ================= */
 const now = new Date();
 const today = now.toLocaleDateString('en-US', { weekday: 'long' });
 document.getElementById("today").textContent = today;
 
-/* ================= BUILD TABLE ================= */
 const table = document.getElementById("scheduleTable");
 const dailyBlocks = {
   Monday: [
@@ -310,211 +261,99 @@ const dailyBlocks = {
 const blocks = dailyBlocks[today];
 
 if (!blocks) {
-  const row = document.createElement("tr");
-  const titleP = document.createElement("td");
-  titleP.textContent = "WEEKEND";
-
-  const contentC = document.createElement("td");
-  contentC.style.display = "flex";
-  contentC.style.alignItems = "center";
-  contentC.style.justifyContent = "center";
-  contentC.style.gap = "15px";
-
-  const textSpan = document.createElement("span");
-  textSpan.textContent = "FREEdom 😊 🥳 ";
-  textSpan.style.fontSize = "24px";
-  textSpan.style.fontWeight = "bold";
-
-  contentC.appendChild(textSpan);
-  row.appendChild(titleP);
-  row.appendChild(contentC);
-  table.appendChild(row);
+  table.innerHTML = "<tr><td colspan='2' style='font-size:24px; padding:30px;'>FREEdom 😊 🥳</td></tr>";
 } else {
   let classIndex = 0;
   blocks.forEach((b) => {
     if (b.type === "break") return;
     let row = document.createElement("tr");
-    row.dataset.start = b.start;
-    row.dataset.end = b.end;
+    row.dataset.start = b.start; row.dataset.end = b.end;
     let p = document.createElement("td");
-    let timeSpan = document.createElement("span");
-    timeSpan.className = "periodTime";
-    timeSpan.textContent = `${b.start}-${b.end}`;
-    p.appendChild(timeSpan);
-    p.appendChild(document.createTextNode(b.label));
+    let ts = document.createElement("span"); ts.className="periodTime"; ts.textContent=`${b.start}-${b.end}`;
+    p.appendChild(ts); p.appendChild(document.createTextNode(b.label));
     let c = document.createElement("td");
     if (b.type === "class") {
         c.textContent = (schedule[today] || [])[classIndex] || "-";
         classIndex++;
-    }
-    if (b.type === "lunch") {
+    } else if (b.type === "lunch") {
         c.innerHTML = '<span class="lunchText">LUNCH</span>';
     }
-    row.appendChild(p);
-    row.appendChild(c);
+    row.appendChild(p); row.appendChild(c);
     table.appendChild(row);
   });
 }
 
-/* ================= CURRENT CLASS DETECTOR ================= */
 function updateCurrentClass(){
-const now=new Date(); const minutesNow=now.getHours()*60+now.getMinutes();
-const rows=document.querySelectorAll("#scheduleTable tr");
-rows.forEach(row=>{
-const start=row.dataset.start; const end=row.dataset.end; if(!start||!end) return;
+const minsNow=new Date().getHours()*60+new Date().getMinutes();
+document.querySelectorAll("#scheduleTable tr").forEach(row=>{
+const start=row.dataset.start; const end=row.dataset.end; if(!start) return;
 const [sh,sm]=start.split(":").map(Number); const [eh,em]=end.split(":").map(Number);
-const startMin=sh*60+sm; const endMin=eh*60+em;
-row.classList.remove("currentClass");
-if(minutesNow>=startMin && minutesNow<endMin){ row.classList.add("currentClass"); }
+row.classList.toggle("currentClass", minsNow >= (sh*60+sm) && minsNow < (eh*60+em));
 });
 }
-setInterval(updateCurrentClass,10000);
-updateCurrentClass();
+setInterval(updateCurrentClass,10000); updateCurrentClass();
 
-/* ================= CLOCK ================= */
 const canvas=document.getElementById("clock");
 const ctx=canvas.getContext("2d");
 function toMin(t){let[h,m]=t.split(":"); return h*60+m;}
-function highlightSchedule(label,type){
-document.querySelectorAll("#scheduleTable tr").forEach(r=>{ r.classList.remove("activeRowClass","activeRowLunch"); });
-document.querySelectorAll("#scheduleTable tr").forEach(r=>{
-let td=r.querySelector("td"); if(td && td.textContent===label){
-if(type==="class") r.classList.add("activeRowClass");
-if(type==="lunch") r.classList.add("activeRowLunch");
-}});
-}
 
 function drawClock(){
     let now = new Date();
     let mins = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
     ctx.clearRect(0,0,300,300);
+    ctx.beginPath(); ctx.arc(150,150,133,0,Math.PI*2); ctx.fillStyle="#1f3a5f"; ctx.fill();
 
-    /* face - 5% smaller radius (133) */
-    ctx.beginPath(); 
-    ctx.arc(150,150,133,0,Math.PI*2); 
-    ctx.fillStyle="#1f3a5f"; 
-    ctx.fill();
-
-    /* ticks - adjusted for smaller radius (113) */
     for(let i=0;i<60;i++){
-        let angle=i*Math.PI/30; 
-        let len=i%5==0?15:7;
-        let x1=150+Math.cos(angle)*(113-len); 
-        let y1=150+Math.sin(angle)*(113-len);
-        let x2=150+Math.cos(angle)*113; 
-        let y2=150+Math.sin(angle)*113;
+        let angle=i*Math.PI/30; let len=i%5==0?15:7;
+        let x1=150+Math.cos(angle)*(113-len); let y1=150+Math.sin(angle)*(113-len);
+        let x2=150+Math.cos(angle)*113; let y2=150+Math.sin(angle)*113;
         ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
         ctx.strokeStyle="white"; ctx.lineWidth=i%5==0?3:1; ctx.stroke();
     }
   
-    let active = null;
-    if (blocks) {
-        for(let b of blocks){
-            let s = toMin(b.start); 
-            let e = toMin(b.end); 
-            if(mins >= s && mins <= e){ 
-                active = b; 
-                break; 
-            }
-        }
-    }
-
-    let label = "Free Time"; 
-    let color = "gray";
-    let total = 0;
-    let remain = 0;
+    let active = blocks ? blocks.find(b => mins >= toMin(b.start) && mins <= toMin(b.end)) : null;
+    let label = "Free Time"; let color = "gray"; let total = 0; let remain = 0;
 
     if(active){
         label = active.label;
-        if(active.type==="class") color="red";
-        if(active.type==="break") color="blue";
-        if(active.type==="lunch") color="red";
+        color = active.type==="class" || active.type==="lunch" ? "red" : "blue";
         total = toMin(active.end) - toMin(active.start);
         remain = toMin(active.end) - mins;
-        highlightSchedule(active.label, active.type);
     } else if (blocks) {
         let nextBlock = blocks.find(b => mins < toMin(b.start));
         if(nextBlock){
-            label = `Free Time → ${nextBlock.label}`;
-            color = "gray";
-            total = toMin(nextBlock.start) - mins;
-            remain = total;
-        } else {
-            label = "Free Time → End of Day";
-            color = "gray";
-            total = 1; remain = 1;
+            label = `Free Time → ${nextBlock.label}`; total = toMin(nextBlock.start) - mins; remain = total;
         }
     } else {
-        // === WEEKEND COUNTDOWN LOGIC ===
-        color = "#00d4ff"; 
-        label = "WEEKEND FREEDOM";
-        
-        let friday = new Date(now);
-        let day = friday.getDay(); 
-        let diffToFri = (day >= 5) ? (day - 5) : (day + 2);
-        friday.setDate(now.getDate() - diffToFri);
-        friday.setHours(16, 30, 0, 0);
-
-        let monday = new Date(friday);
-        monday.setDate(friday.getDate() + 3);
-        monday.setHours(8, 30, 0, 0);
-
-        total = monday.getTime() - friday.getTime();
-        remain = monday.getTime() - now.getTime();
-        
-        if (remain < 0) remain = 0;
-        if (remain > total) remain = total;
+        color = "#00d4ff"; label = "WEEKEND FREEDOM";
+        total = 48 * 60; remain = 1; // Placeholder for visual
     }
 
-    /* countdown arc bordering the face (133) */
     if(total > 0){
         let percent = remain / total;
-        let end = -Math.PI/2 + percent * 2 * Math.PI;
-        ctx.beginPath(); 
-        ctx.arc(150,150,133,-Math.PI/2,end);
-        let pulse = 6 + Math.sin(Date.now()/200)*2;
-        ctx.lineWidth = pulse; 
-        ctx.strokeStyle = color; 
-        ctx.stroke();
+        ctx.beginPath(); ctx.arc(150,150,133,-Math.PI/2,-Math.PI/2 + percent * 2 * Math.PI);
+        ctx.lineWidth = 6 + Math.sin(Date.now()/200)*2; ctx.strokeStyle = color; ctx.stroke();
     }
 
-    /* DIGITAL CLOCK */
-    let h = now.getHours(); 
-    let m = now.getMinutes().toString().padStart(2,"0"); 
-    let s = now.getSeconds().toString().padStart(2,"0");
-    let ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12; if(h==0) h=12;
-    ctx.fillStyle="white"; 
-    ctx.font="28px Arial"; 
-    ctx.textAlign="center"; 
-    ctx.textBaseline="middle";
+    let h = now.getHours(); let m = now.getMinutes().toString().padStart(2,"0"); let s = now.getSeconds().toString().padStart(2,"0");
+    let ampm = h >= 12 ? "PM" : "AM"; h = h % 12 || 12;
+    ctx.fillStyle="white"; ctx.font="28px Arial"; ctx.textAlign="center"; ctx.textBaseline="middle";
     ctx.fillText(`${h}:${m}:${s} ${ampm}`, 150, 150);
-
     document.getElementById("periodLabel").textContent = label;
     document.getElementById("periodLabel").style.color = color;
 }
 setInterval(drawClock, 100);
 
-/* ================= EMOJI RAIN ENGINE ================= */
 function startEmojiRain() {
   setInterval(() => {
-    // Only rain when it's the weekend (no schedule blocks)
     if (!blocks) {
-      const currentTime = new Date();
-      const day = currentTime.getDay();
-      const hour = currentTime.getHours();
-      
-      // Sunday is 0. Shift to poo emojis if it's Sunday after 9 PM.
-      const isPooTime = (day === 0 && hour >= 21);
+      const isPooTime = (new Date().getDay() === 0 && new Date().getHours() >= 21);
       const emojis = isPooTime ? ['💩'] : ['🎉', '✨', '🎊', '🥳'];
-      
       const e = document.createElement('div');
       e.className = 'falling-emoji';
       e.textContent = emojis[Math.floor(Math.random() * emojis.length)];
       e.style.left = Math.random() * 100 + 'vw';
       e.style.animationDuration = (Math.random() * 3 + 2) + 's';
-      e.style.opacity = Math.random();
-      
       document.body.appendChild(e);
       setTimeout(() => e.remove(), 5000);
     }
@@ -522,7 +361,6 @@ function startEmojiRain() {
 }
 startEmojiRain();
 
-/* ================= WEATHER ================= */
 async function loadWeather(){
 try{
 const geoRes=await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`);
@@ -534,24 +372,21 @@ document.getElementById("weather").textContent=`🌤 Weather: ${data.weather[0].
 }
 loadWeather();
 
-/* ================= AIR ================= */
 async function loadAir(){
 try{
 const geoRes=await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=Dangjin,KR&limit=1&appid=${API_KEY}`);
 const geoData=await geoRes.json(); const lat=geoData[0].lat; const lon=geoData[0].lon;
 const res=await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
-const data=await res.json(); const aqi=data.list[0].main.aqi;
+const data=await res.json();
 const levels=["Good 😊","Fair 🙂","Moderate 😐","Poor 😷","Very Poor ☠️"];
-document.getElementById("air").textContent=`😷 Air Quality: ${levels[aqi-1]}`;
+document.getElementById("air").textContent=`😷 Air Quality: ${levels[data.list[0].main.aqi-1]}`;
 }catch{ document.getElementById("air").textContent="Air Quality Unavailable"; }
 }
 loadAir();
 
-/* ================= POPUP ================= */
 const weekPopup=document.getElementById("weekPopup");
 document.getElementById("today").onclick=()=>{ weekPopup.style.display="flex"; }
 weekPopup.onclick=()=>{ weekPopup.style.display="none"; }
-
 </script>
 </body>
 </html>
