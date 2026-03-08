@@ -6,27 +6,6 @@
 <title>Teacher Timer</title>
 
 <style>
-/* ================= COUNTDOWN RING PULSE ================= */
-@keyframes ringPulseRed{
-0%{filter:drop-shadow(0 0 3px rgba(255,60,60,.6));}
-50%{filter:drop-shadow(0 0 18px rgba(255,60,60,1));}
-100%{filter:drop-shadow(0 0 3px rgba(255,60,60,.6));}
-}
-@keyframes ringPulseBlue{
-0%{filter:drop-shadow(0 0 3px rgba(70,150,255,.6));}
-50%{filter:drop-shadow(0 0 18px rgba(70,150,255,1));}
-100%{filter:drop-shadow(0 0 3px rgba(70,150,255,.6));}
-}
-@keyframes ringPulseGray{
-0%{filter:drop-shadow(0 0 3px rgba(180,180,180,.5));}
-50%{filter:drop-shadow(0 0 12px rgba(220,220,220,.9));}
-100%{filter:drop-shadow(0 0 3px rgba(180,180,180,.5));}
-}
-.pulseClass{animation:ringPulseRed 2s infinite ease-in-out;}
-.pulseBreak{animation:ringPulseBlue 2s infinite ease-in-out;}
-.pulseLunch{animation:ringPulseRed 2s infinite ease-in-out;}
-.pulseFree{animation:ringPulseGray 2s infinite ease-in-out;}
-
 /* ================= THEME & LAYOUT ================= */
 body{
 background:#0b1626;
@@ -163,7 +142,7 @@ canvas{background:#1f3a5f;border-radius:50%;box-shadow:0 0 20px rgba(0,140,255,.
 <div id="periodLabel"></div>
 
 <div id="info">
-<div id="weather">🌤 Weather</div>
+<div id="weather">🌥 Weather</div>
 <div id="air"> Air Quality</div>
 </div>
 
@@ -294,12 +273,19 @@ const canvas=document.getElementById("clock");
 const ctx=canvas.getContext("2d");
 function toMin(t){let[h,m]=t.split(":"); return h*60+m;}
 
+// ================= PULSE LOGIC =================
+let pulseGlow = 0;
+let pulseDir = 1;
+
 function drawClock(){
     let now = new Date();
     let mins = now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
     ctx.clearRect(0,0,300,300);
+    
+    // Background
     ctx.beginPath(); ctx.arc(150,150,133,0,Math.PI*2); ctx.fillStyle="#1f3a5f"; ctx.fill();
 
+    // Ticks
     for(let i=0;i<60;i++){
         let angle=i*Math.PI/30; let len=i%5==0?15:7;
         let x1=150+Math.cos(angle)*(113-len); let y1=150+Math.sin(angle)*(113-len);
@@ -309,25 +295,21 @@ function drawClock(){
     }
   
     let active = blocks ? blocks.find(b => mins >= toMin(b.start) && mins <= toMin(b.end)) : null;
-    let label = "Free Time"; let color = "gray"; let total = 0; let remain = 0;
-    canvas.className = "";
+    let label = "Free Time"; let color = "#888"; let total = 0; let remain = 0;
 
     if(active){
         label = active.label;
-        if(active.type==="class") { color="red"; canvas.className="pulseClass"; }
-        if(active.type==="break") { color="blue"; canvas.className="pulseBreak"; }
-        if(active.type==="lunch") { color="red"; canvas.className="pulseLunch"; }
+        color = active.type === "break" ? "#4696ff" : "#ff3c3c";
         total = toMin(active.end) - toMin(active.start);
         remain = toMin(active.end) - mins;
     } else if (blocks) {
         let nextBlock = blocks.find(b => mins < toMin(b.start));
         if(nextBlock){
             label = `Free Time → ${nextBlock.label}`; total = toMin(nextBlock.start) - mins; remain = total;
-            canvas.className="pulseFree";
+            color = "#fff";
         }
     } else {
-        color = "#00d4ff"; label = "WEEKEND FREEDOM"; canvas.className="pulseFree";
-        
+        color = "#00d4ff"; label = "WEEKEND FREEDOM";
         let mon = new Date(now);
         let day = mon.getDay();
         let diff = (day === 0) ? 1 : (day === 6) ? 2 : (8 - day);
@@ -336,10 +318,25 @@ function drawClock(){
         remain = (mon.getTime() - now.getTime()) / (1000 * 60);
     }
 
+    // DRAW PULSING RING
     if(total > 0 && remain > 0){
         let percent = remain / total;
-        ctx.beginPath(); ctx.arc(150,150,133,-Math.PI/2,-Math.PI/2 + percent * 2 * Math.PI);
-        ctx.lineWidth = 6; ctx.strokeStyle = color; ctx.stroke();
+        
+        // Pulse update
+        pulseGlow += 0.4 * pulseDir;
+        if(pulseGlow > 16 || pulseGlow < 0) pulseDir *= -1;
+
+        ctx.save();
+        ctx.beginPath(); 
+        ctx.arc(150,150,133,-Math.PI/2, -Math.PI/2 + percent * 2 * Math.PI);
+        ctx.lineWidth = 8;
+        ctx.strokeStyle = color;
+        
+        ctx.shadowBlur = pulseGlow;
+        ctx.shadowColor = color;
+        
+        ctx.stroke();
+        ctx.restore();
     }
 
     let h = now.getHours(); let m = now.getMinutes().toString().padStart(2,"0"); let s = now.getSeconds().toString().padStart(2,"0");
@@ -349,7 +346,7 @@ function drawClock(){
     document.getElementById("periodLabel").textContent = label;
     document.getElementById("periodLabel").style.color = color;
 }
-setInterval(drawClock, 100);
+setInterval(drawClock, 50); // Faster refresh for smooth glow
 
 function startEmojiRain() {
   setInterval(() => {
