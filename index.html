@@ -18,7 +18,7 @@ overflow-x: hidden;
 }
 h2{margin:10px 0;cursor:pointer;}
 #clockBox{margin:auto;width:320px; height:320px; display:flex; align-items:center; justify-content:center;}
-canvas{background:#1f3a5f; border-radius:50%; box-shadow:0 0 20px rgba(0,140,255,.4); border: 8px solid #1f3a5f;}
+canvas{background:#1f3a5f; border-radius:50%; box-shadow:0 0 20px rgba(0,140,255,.4); border: 8px solid #1f3a5f; image-rendering: -webkit-optimize-contrast;}
 #periodLabel{font-size:22px;font-weight:bold;margin-top:10px;}
 #info{margin-top:20px;font-size:18px;}
 #weather,#air{font-weight:bold;margin-top:5px;}
@@ -159,7 +159,6 @@ let currentCondition = "default";
 
 const schedule = {
   Monday: [null, "6-4 English", "6-3 English", "6-1 English", "6-2 English", null],
-  Tuesday: ["-", "-", "-", "-", "-", "-"],
   Wednesday: [null, "6-5 English", "6-6 English", "6-7 English", "6-8 English", null],
   Thursday: ["5-6 English", "5-5 English", "5-4 English", "5-1 English", "5-2 English", null],
   Friday: ["5-3 English", "5-7 English", "5-8 English", "5-9 English", null, null]
@@ -171,54 +170,62 @@ document.getElementById("today").textContent = today;
 
 const dailyBlocks = {
   Monday: [
+    { type: "prep", label: "Morning Prep", start: "08:30", end: "09:00" },
     { type: "class", label: "1교시", start: "09:00", end: "09:40" },
-    { type: "break", start: "09:40", end: "09:50" },
+    { type: "break", label: "Break", start: "09:40", end: "09:50" },
     { type: "class", label: "2교시", start: "09:50", end: "10:30" },
-    { type: "break", start: "10:30", end: "10:40" },
+    { type: "break", label: "Break", start: "10:30", end: "10:40" },
     { type: "class", label: "3교시", start: "10:40", end: "11:20" },
-    { type: "lunch", label: "점심시간", start: "11:20", end: "12:20" },
+    { type: "lunch", label: "Lunch Time", start: "11:20", end: "12:20" },
     { type: "class", label: "4교시", start: "12:20", end: "13:00" },
-    { type: "break", start: "13:00", end: "13:10" },
+    { type: "break", label: "Break", start: "13:00", end: "13:10" },
     { type: "class", label: "5교시", start: "13:10", end: "13:50" },
-    { type: "break", start: "13:50", end: "14:00" },
-    { type: "class", label: "6교시", start: "14:00", end: "14:40" }
+    { type: "break", label: "Break", start: "13:50", end: "14:00" },
+    { type: "class", label: "6교시", start: "14:00", end: "14:40" },
+    { type: "prep", label: "Afternoon Office", start: "14:40", end: "16:30" }
   ],
   Wednesday: [
+    { type: "prep", label: "Morning Prep", start: "08:30", end: "09:00" },
     { type: "class", label: "1교시", start: "09:00", end: "09:40" },
-    { type: "break", start: "09:40", end: "09:50" },
+    { type: "break", label: "Break", start: "09:40", end: "09:50" },
     { type: "class", label: "2교시", start: "09:50", end: "10:30" },
-    { type: "break", start: "10:30", end: "10:40" },
+    { type: "break", label: "Break", start: "10:30", end: "10:40" },
     { type: "class", label: "3교시", start: "10:40", end: "11:20" },
-    { type: "lunch", label: "점심시간", start: "11:20", end: "12:20" },
+    { type: "lunch", label: "Lunch Time", start: "11:20", end: "12:20" },
     { type: "class", label: "4교시", start: "12:20", end: "13:00" },
-    { type: "break", start: "13:00", end: "13:10" },
+    { type: "break", label: "Break", start: "13:00", end: "13:10" },
     { type: "class", label: "5교시", start: "13:10", end: "13:50" },
-    { type: "break", start: "13:50", end: "14:00" },
-    { type: "class", label: "6교시", start: "14:00", end: "14:40" }
+    { type: "break", label: "Break", start: "13:50", end: "14:00" },
+    { type: "class", label: "6교시", start: "14:00", end: "14:40" },
+    { type: "prep", label: "Afternoon Office", start: "14:40", end: "16:30" }
   ],
   Thursday: [
+    { type: "prep", label: "Morning Prep", start: "08:30", end: "09:00" },
     { type: "class", label: "1교시", start: "09:00", end: "09:40" },
-    { type: "break", start: "09:40", end: "09:50" },
+    { type: "break", label: "Break", start: "09:40", end: "09:50" },
     { type: "class", label: "2교시", start: "09:50", end: "10:30" },
-    { type: "break", start: "10:30", end: "10:40" },
+    { type: "break", label: "Break", start: "10:30", end: "10:40" },
     { type: "class", label: "3교시", start: "10:40", end: "11:20" },
     { type: "class", label: "4교시", start: "11:20", end: "12:00" },
-    { type: "lunch", label: "점심시간", start: "12:00", end: "13:00" },
+    { type: "lunch", label: "Lunch Time", start: "12:00", end: "13:00" },
     { type: "class", label: "5교시", start: "13:10", end: "13:50" },
-    { type: "break", start: "13:50", end: "14:00" },
-    { type: "class", label: "6교시", start: "14:00", end: "14:40" }
+    { type: "break", label: "Break", start: "13:50", end: "14:00" },
+    { type: "class", label: "6교시", start: "14:00", end: "14:40" },
+    { type: "prep", label: "Afternoon Office", start: "14:40", end: "16:30" }
   ],
   Friday: [
+    { type: "prep", label: "Morning Prep", start: "08:30", end: "09:00" },
     { type: "class", label: "1교시", start: "09:00", end: "09:40" },
-    { type: "break", start: "09:40", end: "09:50" },
+    { type: "break", label: "Break", start: "09:40", end: "09:50" },
     { type: "class", label: "2교시", start: "09:50", end: "10:30" },
-    { type: "break", start: "10:30", end: "10:40" },
+    { type: "break", label: "Break", start: "10:30", end: "10:40" },
     { type: "class", label: "3교시", start: "10:40", end: "11:20" },
     { type: "class", label: "4교시", start: "11:20", end: "12:00" },
-    { type: "lunch", label: "점심시간", start: "12:00", end: "13:00" },
+    { type: "lunch", label: "Lunch Time", start: "12:00", end: "13:00" },
     { type: "class", label: "5교시", start: "13:10", end: "13:50" },
-    { type: "break", start: "13:50", end: "14:00" },
-    { type: "class", label: "6교시", start: "14:00", end: "14:40" }
+    { type: "break", label: "Break", start: "13:50", end: "14:00" },
+    { type: "class", label: "6교시", start: "14:00", end: "14:40" },
+    { type: "prep", label: "Afternoon Office", start: "14:40", end: "16:30" }
   ]
 };
 
@@ -230,7 +237,7 @@ if (!blocks) {
 } else {
   let classIndex = 0;
   blocks.forEach((b) => {
-    if (b.type === "break") return;
+    if (b.type === "break" || b.type === "prep") return;
     let row = document.createElement("tr");
     row.dataset.start = b.start; row.dataset.end = b.end;
     let p = document.createElement("td");
@@ -248,19 +255,9 @@ if (!blocks) {
   });
 }
 
-function updateCurrentClass(){
-const minsNow=new Date().getHours()*60+new Date().getMinutes();
-document.querySelectorAll("#scheduleTable tr").forEach(row=>{
-const start=row.dataset.start; const end=row.dataset.end; if(!start) return;
-const [sh,sm]=start.split(":").map(Number); const [eh,em]=end.split(":").map(Number);
-row.classList.toggle("currentClass", minsNow >= (sh*60+sm) && minsNow < (eh*60+em));
-});
-}
-setInterval(updateCurrentClass,10000); updateCurrentClass();
-
 const canvas=document.getElementById("clock");
 const ctx=canvas.getContext("2d");
-function toMin(t){let[h,m]=t.split(":"); return h*60+m;}
+function toMin(t){let[h,m]=t.split(":"); return parseInt(h)*60+parseInt(m);}
 
 let pulseGlow = 0;
 let pulseDir = 1;
@@ -273,7 +270,7 @@ function drawClock(){
     // Background
     ctx.beginPath(); ctx.arc(150,150,133,0,Math.PI*2); ctx.fillStyle="#1f3a5f"; ctx.fill();
 
-    // Ticks (Rounded and clean)
+    // Ticks
     for(let i=0;i<60;i++){
         let angle=i*Math.PI/30; 
         let isMajor = i % 5 === 0;
@@ -285,77 +282,94 @@ function drawClock(){
         ctx.lineCap = "round"; ctx.stroke();
     }
   
-    let active = blocks ? blocks.find(b => mins >= toMin(b.start) && mins <= toMin(b.end)) : null;
-    let label = "Free Time"; let color = "#888"; let total = 0; let remain = 0;
+    let label = "Free Time"; 
+    let color = "#888"; 
+    let total = 0; 
+    let remain = 0;
 
-    if(active){
-        label = active.label;
-        color = active.type === "break" ? "#4696ff" : "#ff3c3c";
-        total = toMin(active.end) - toMin(active.start);
-        remain = toMin(active.end) - mins;
-    } else if (blocks) {
-        let nextBlock = blocks.find(b => mins < toMin(b.start));
-        if(nextBlock){
-            label = `Free Time → ${nextBlock.label}`; total = toMin(nextBlock.start) - mins; remain = total;
-            color = "#fff";
+    if (blocks) {
+        let active = blocks.find(b => mins >= toMin(b.start) && mins < toMin(b.end));
+        if(active){
+            label = active.label;
+            if(active.type === "class") color = "#ff3c3c";
+            else if(active.type === "break") color = "#4696ff";
+            else if(active.type === "lunch") color = "#ffcc00";
+            else color = "#20b2aa"; // prep
+
+            total = toMin(active.end) - toMin(active.start);
+            remain = toMin(active.end) - mins;
+        } else {
+            let nextBlock = blocks.find(b => mins < toMin(b.start));
+            if(nextBlock){
+                label = `Next: ${nextBlock.label}`; 
+                color = "#9cc9ff";
+                let lastBlock = [...blocks].reverse().find(b => mins >= toMin(b.end));
+                let startOfGap = lastBlock ? toMin(lastBlock.end) : 0;
+                total = toMin(nextBlock.start) - startOfGap;
+                remain = toMin(nextBlock.start) - mins;
+            }
         }
     } else {
         color = "#00d4ff"; label = "WEEKEND FREEDOM";
-        let mon = new Date(now);
-        let day = mon.getDay();
-        let diff = (day === 0) ? 1 : (day === 6) ? 2 : (8 - day);
-        mon.setDate(now.getDate() + diff); mon.setHours(8, 30, 0, 0);
-        total = 48 * 60; 
-        remain = (mon.getTime() - now.getTime()) / (1000 * 60);
+        total = 1440; remain = 1440; // Static visual for weekend
     }
 
-    // DRAW PULSING RING (Spaced at 140)
-    if(total > 0 && remain > 0){
-        let percent = remain / total;
+    // DRAW PULSING RING (Drains clockwise)
+    if(total > 0){
+        let percent = Math.max(0, Math.min(1, remain / total));
         pulseGlow += 0.4 * pulseDir;
         if(pulseGlow > 16 || pulseGlow < 0) pulseDir *= -1;
 
         ctx.save();
+        // Background track
+        ctx.beginPath(); ctx.arc(150,150,138,0,Math.PI*2);
+        ctx.strokeStyle = color; ctx.globalAlpha = 0.1; ctx.lineWidth = 10; ctx.stroke();
+
+        // Pulsing ring
+        ctx.globalAlpha = 1.0;
         ctx.beginPath(); 
-        ctx.arc(150,150,140,-Math.PI/2, -Math.PI/2 + percent * 2 * Math.PI);
-        ctx.lineWidth = 8;
-        ctx.strokeStyle = color;
-        ctx.lineCap = "round";
-        ctx.shadowBlur = pulseGlow;
-        ctx.shadowColor = color;
-        ctx.stroke();
+        ctx.arc(150,150,138, -Math.PI/2, -Math.PI/2 + (percent * 2 * Math.PI), false);
+        ctx.lineWidth = 12; ctx.strokeStyle = color; ctx.lineCap = "round";
+        ctx.shadowBlur = pulseGlow; ctx.shadowColor = color; ctx.stroke();
         ctx.restore();
     }
 
+    // Digital Time
     let h = now.getHours(); let m = now.getMinutes().toString().padStart(2,"0"); let s = now.getSeconds().toString().padStart(2,"0");
     let ampm = h >= 12 ? "PM" : "AM"; h = h % 12 || 12;
     ctx.fillStyle="white"; ctx.font="bold 28px Arial"; ctx.textAlign="center"; ctx.textBaseline="middle";
     ctx.fillText(`${h}:${m}:${s} ${ampm}`, 150, 150);
+
     document.getElementById("periodLabel").textContent = label;
     document.getElementById("periodLabel").style.color = color;
+
+    // Table Highlighting
+    document.querySelectorAll("#scheduleTable tr").forEach(row=>{
+        const start=row.dataset.start; const end=row.dataset.end;
+        if(start && end) {
+            const isCurrent = (mins >= toMin(start) && mins < toMin(end));
+            row.classList.toggle("currentClass", isCurrent);
+        }
+    });
 }
 setInterval(drawClock, 50); 
 
 function startEmojiRain() {
   setInterval(() => {
-    const isPooTime = (new Date().getDay() === 0 && new Date().getHours() >= 21);
-    let emojis = ['🎉', '✨', '🎊', '🥳']; // Default
+    const now = new Date();
+    const isPooTime = (now.getDay() === 0 && now.getHours() >= 21);
+    let emojis = ['🎉', '✨', '🎊', '🥳']; 
 
     if (isPooTime) {
         emojis = ['💩', '😭'];
     } else {
-        if (currentCondition === "Rain" || currentCondition === "Drizzle") {
-            emojis = ['☔', '💧', '☁️', '🐸'];
-        } else if (currentCondition === "Snow") {
-            emojis = ['❄️', '⛄', '🤍', '🌬️'];
-        } else if (currentCondition === "Clear") {
-            emojis = ['☀️', '🌻', '😎', '✨'];
-        } else if (currentCondition === "Clouds") {
-            emojis = ['☁️', '☁️', '🌥️', '🎈'];
-        }
+        if (currentCondition === "Rain" || currentCondition === "Drizzle") emojis = ['☔', '💧', '☁️', '🐸'];
+        else if (currentCondition === "Snow") emojis = ['❄️', '⛄', '🤍', '🌬️'];
+        else if (currentCondition === "Clear") emojis = ['☀️', '🌻', '😎', '✨'];
+        else if (currentCondition === "Clouds") emojis = ['☁️', '☁️', '🌥️', '🎈'];
     }
     
-    // On workdays, only rain if it's actually raining or it's poo time
+    // Only rain on workdays if it's weather-related or Poo Time
     if (blocks && !isPooTime && currentCondition !== "Rain" && currentCondition !== "Snow") return;
 
     const e = document.createElement('div');
@@ -375,9 +389,7 @@ try{
     const geoData=await geoRes.json();
     const res=await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${geoData[0].lat}&lon=${geoData[0].lon}&appid=${API_KEY}&units=metric`);
     const data=await res.json();
-    
     currentCondition = data.weather[0].main; 
-
     const weatherDetails = {
         "Clear": { emoji: "☀️", text: "Clear" },
         "Clouds": { emoji: "☁️", text: "Cloudy" },
@@ -387,7 +399,6 @@ try{
         "Snow": { emoji: "❄️", text: "Snowy" },
         "Mist": { emoji: "🌫️", text: "Misty" }
     };
-
     const current = weatherDetails[data.weather[0].main] || { emoji: "✨", text: data.weather[0].main };
     document.getElementById("weather").textContent=`${current.emoji} Weather: ${current.text} / ${data.main.temp.toFixed(1)}°C`;
 }catch{ document.getElementById("weather").textContent="Weather Unavailable"; }
