@@ -47,6 +47,7 @@ canvas{background:#1f3a5f; border-radius:50%; box-shadow:0 0 20px rgba(0,140,255
   box-shadow: inset 0 0 10px rgba(0,150,255,0.4);
   font-weight: bold;
 }
+.prepPeriod { color: #20b2aa !important; } 
 .periodTime {
   font-size: 10px;
   color: #aaa;
@@ -231,24 +232,30 @@ const dailyBlocks = {
 
 const blocks = dailyBlocks[today];
 const tableElem = document.getElementById("scheduleTable");
+const currentMinsTotal = now.getHours() * 60 + now.getMinutes();
+const isWeekendView = (today === "Saturday" || today === "Sunday") || (today === "Friday" && currentMinsTotal >= (16*60+30));
 
-if (!blocks) {
+if (isWeekendView || !blocks) {
   tableElem.innerHTML = "<tr><td colspan='2' style='font-size:24px; padding:30px;'>FREEdom 😊 🥳</td></tr>";
 } else {
   let classIndex = 0;
   blocks.forEach((b) => {
-    if (b.type === "break" || b.type === "prep") return;
+    if (b.type === "break") return;
     let row = document.createElement("tr");
     row.dataset.start = b.start; row.dataset.end = b.end;
     let p = document.createElement("td");
     let ts = document.createElement("span"); ts.className="periodTime"; ts.textContent=`${b.start}-${b.end}`;
     p.appendChild(ts); p.appendChild(document.createTextNode(b.label));
     let c = document.createElement("td");
+    
     if (b.type === "class") {
         c.textContent = (schedule[today] || [])[classIndex] || "-";
         classIndex++;
     } else if (b.type === "lunch") {
         c.innerHTML = '<span class="lunchText">LUNCH</span>';
+    } else if (b.type === "prep") {
+        c.textContent = "Class Prep";
+        c.classList.add("prepPeriod");
     }
     row.appendChild(p); row.appendChild(c);
     tableElem.appendChild(row);
@@ -287,7 +294,7 @@ function drawClock(){
     let total = 0; 
     let remain = 0;
 
-    if (blocks) {
+    if (blocks && !isWeekendView) {
         let active = blocks.find(b => mins >= toMin(b.start) && mins < toMin(b.end));
         if(active){
             label = active.label;
@@ -304,28 +311,25 @@ function drawClock(){
                 label = `Next: ${nextBlock.label}`; 
                 color = "#9cc9ff";
                 let lastBlock = [...blocks].reverse().find(b => mins >= toMin(b.end));
-                let startOfGap = lastBlock ? toMin(lastBlock.end) : 0;
+                let startOfGap = lastBlock ? toMin(lastBlock.end) : toMin("08:30");
                 total = toMin(nextBlock.start) - startOfGap;
                 remain = toMin(nextBlock.start) - mins;
             }
         }
     } else {
         color = "#00d4ff"; label = "WEEKEND FREEDOM";
-        total = 1440; remain = 1440; // Static visual for weekend
+        total = 1440; remain = 1440;
     }
 
-    // DRAW PULSING RING (Drains clockwise)
+    // DRAW RING
     if(total > 0){
         let percent = Math.max(0, Math.min(1, remain / total));
         pulseGlow += 0.4 * pulseDir;
         if(pulseGlow > 16 || pulseGlow < 0) pulseDir *= -1;
 
         ctx.save();
-        // Background track
         ctx.beginPath(); ctx.arc(150,150,138,0,Math.PI*2);
         ctx.strokeStyle = color; ctx.globalAlpha = 0.1; ctx.lineWidth = 10; ctx.stroke();
-
-        // Pulsing ring
         ctx.globalAlpha = 1.0;
         ctx.beginPath(); 
         ctx.arc(150,150,138, -Math.PI/2, -Math.PI/2 + (percent * 2 * Math.PI), false);
@@ -356,22 +360,20 @@ setInterval(drawClock, 50);
 
 function startEmojiRain() {
   setInterval(() => {
-    const now = new Date();
-    const isPooTime = (now.getDay() === 0 && now.getHours() >= 21);
-    let emojis = ['🎉', '✨', '🎊', '🥳']; 
+    const cur = new Date(); const day = cur.getDay(); const hr = cur.getHours();
+    const minsNow = hr * 60 + cur.getMinutes(); 
+    let mode = "OFF";
+    if (day === 5 && minsNow >= (16*60+30)) mode = "WEEKEND";
+    else if (day === 6) mode = "WEEKEND";
+    else if (day === 0) mode = (hr >= 21) ? "POO" : "WEEKEND";
+    if (mode === "OFF") return;
 
-    if (isPooTime) {
-        emojis = ['💩', '😭'];
-    } else {
+    let emojis = ['🎉', '✨', '🎊', '🥳']; 
+    if (mode === "POO") emojis = ['💩', '😭'];
+    else {
         if (currentCondition === "Rain" || currentCondition === "Drizzle") emojis = ['☔', '💧', '☁️', '🐸'];
         else if (currentCondition === "Snow") emojis = ['❄️', '⛄', '🤍', '🌬️'];
-        else if (currentCondition === "Clear") emojis = ['☀️', '🌻', '😎', '✨'];
-        else if (currentCondition === "Clouds") emojis = ['☁️', '☁️', '🌥️', '🎈'];
     }
-    
-    // Only rain on workdays if it's weather-related or Poo Time
-    if (blocks && !isPooTime && currentCondition !== "Rain" && currentCondition !== "Snow") return;
-
     const e = document.createElement('div');
     e.className = 'falling-emoji';
     e.textContent = emojis[Math.floor(Math.random() * emojis.length)];
@@ -391,12 +393,9 @@ try{
     const data=await res.json();
     currentCondition = data.weather[0].main; 
     const weatherDetails = {
-        "Clear": { emoji: "☀️", text: "Clear" },
-        "Clouds": { emoji: "☁️", text: "Cloudy" },
-        "Rain": { emoji: "🌧️", text: "Rainy" },
-        "Drizzle": { emoji: "🌦️", text: "Drizzle" },
-        "Thunderstorm": { emoji: "⛈️", text: "Stormy" },
-        "Snow": { emoji: "❄️", text: "Snowy" },
+        "Clear": { emoji: "☀️", text: "Clear" }, "Clouds": { emoji: "☁️", text: "Cloudy" },
+        "Rain": { emoji: "🌧️", text: "Rainy" }, "Drizzle": { emoji: "🌦️", text: "Drizzle" },
+        "Thunderstorm": { emoji: "⛈️", text: "Stormy" }, "Snow": { emoji: "❄️", text: "Snowy" },
         "Mist": { emoji: "🌫️", text: "Misty" }
     };
     const current = weatherDetails[data.weather[0].main] || { emoji: "✨", text: data.weather[0].main };
