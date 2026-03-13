@@ -335,8 +335,36 @@ function drawClock(){
             }
         }
     } else {
-        color = "#00d4ff"; label = "WEEKEND FREEDOM";
-        total = 1440; remain = 1440;
+        // ================= VERIFIED WEEKEND COUNTDOWN =================
+        color = "#00d4ff";
+        
+        let target = new Date(now);
+        let daysUntilMonday = (1 + 7 - now.getDay()) % 7;
+        if (daysUntilMonday === 0 && (now.getHours() > 8 || (now.getHours() === 8 && now.getMinutes() >= 30))) {
+            daysUntilMonday = 7; 
+        }
+        target.setDate(now.getDate() + daysUntilMonday);
+        target.setHours(8, 30, 0, 0);
+        
+        let startOfWeekend = new Date(now);
+        let daysSinceFriday = (now.getDay() + 2) % 7; 
+        startOfWeekend.setDate(now.getDate() - daysSinceFriday);
+        startOfWeekend.setHours(16, 30, 0, 0);
+
+        let totalWeekendMs = target - startOfWeekend;
+        let remainingMs = target - now;
+
+        remain = Math.max(0, remainingMs / 60000);
+        total = totalWeekendMs / 60000;
+
+        let diffHrs = Math.floor(remainingMs / 3600000);
+        let diffMins = Math.floor((remainingMs % 3600000) / 60000);
+        
+        if (remainingMs > 0) {
+            label = `WEEKEND: ${diffHrs}h ${diffMins}m left`;
+        } else {
+            label = "BACK TO WORK! 💼";
+        }
     }
 
     // DRAW RING
