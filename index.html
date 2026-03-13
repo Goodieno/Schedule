@@ -335,16 +335,21 @@ function drawClock(){
             }
         }
     } else {
-        // ================= VERIFIED WEEKEND COUNTDOWN =================
+        // ================= UPDATED WEEKEND COUNTDOWN =================
         color = "#00d4ff";
         
         let target = new Date(now);
+        // Calculate days until Monday (Monday is day 1)
         let daysUntilMonday = (1 + 7 - now.getDay()) % 7;
-        if (daysUntilMonday === 0 && (now.getHours() > 8 || (now.getHours() === 8 && now.getMinutes() >= 30))) {
+        
+        // If it is already Monday morning before 12:00 AM, we target today's 12:00 AM
+        // If it is Monday past 12:00 AM, target the next week
+        if (daysUntilMonday === 0 && (now.getHours() >= 0)) {
             daysUntilMonday = 7; 
         }
+        
         target.setDate(now.getDate() + daysUntilMonday);
-        target.setHours(8, 30, 0, 0);
+        target.setHours(0, 0, 0, 0); // 12:00 AM Monday
         
         let startOfWeekend = new Date(now);
         let daysSinceFriday = (now.getDay() + 2) % 7; 
@@ -363,7 +368,7 @@ function drawClock(){
         if (remainingMs > 0) {
             label = `WEEKEND: ${diffHrs}h ${diffMins}m left`;
         } else {
-            label = "BACK TO WORK! 💼";
+            label = "MONDAY HAS ARRIVED! 💼";
         }
     }
 
